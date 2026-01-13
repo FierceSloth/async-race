@@ -1,8 +1,8 @@
 import type { Component } from '@common/component';
 
-// import styles from './garage-page.module.scss';
+// import styles from './winners-page.module.scss';
 
-export class GaragePage {
+export class WinnersPage {
   private container: Component;
 
   constructor(container: Component) {
@@ -10,7 +10,7 @@ export class GaragePage {
   }
 
   public render(): void {
-    this.container.node.innerHTML = '<h1> Garage Page </h1>';
+    this.container.node.innerHTML = '<h1> Winner Page </h1>';
   }
 
   public destroy(): void {}

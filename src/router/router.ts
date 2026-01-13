@@ -1,89 +1,75 @@
-export const temporary = 'Unicorn complains about an empty file';
+import { PagePath } from '@enums/enums';
 
-// import { PagePath } from '@enums/enums';
-// import { GamePage } from '@pages/game-page/game-page';
-// import { LoginPage } from '@pages/login-page/login-page';
-// import { MainPage } from '@pages/main-page/main-page';
-// import { StatisticsPage } from '@pages/statistics-page/statistics-page';
-// import { NotFound } from '@pages/not-found-page/not-found';
-// import { dataManager } from '@/common/utils/data-manager';
-// import { appEmitter } from '@/common/utils/emitter';
-// import type { IPage } from '@/common/types/interfaces';
-// import type { App } from '@/app';
+import { GaragePage } from '@pages/garage-page/garage-page';
+import { WinnersPage } from '@pages/winners-page/winners-page';
+import { NotFound } from '@pages/not-found/not-found';
 
-// export class Router {
-//   private pages: Record<string, IPage>;
-//   private app: App;
-//   private currentPath = '';
+import { appEmitter } from '@/common/utils/emitter';
+import type { IPage } from '@app-types/types';
+import type { App } from '@/app';
 
-//   private basePath: string;
+export class Router {
+  private pages: Record<string, IPage>;
+  private app: App;
+  private currentPath = '';
 
-//   constructor(app: App) {
-//     this.pages = {
-//       [PagePath.LOGIN]: new LoginPage(app.container),
-//       [PagePath.MAIN]: new MainPage(app.container),
-//       [PagePath.GAME]: new GamePage(app.container),
-//       [PagePath.STATISTICS]: new StatisticsPage(app.container),
-//       [PagePath.NOT_FOUND]: new NotFound(app.container),
-//     };
-//     this.app = app;
+  private basePath: string;
 
-//     const base = import.meta.env.BASE_URL;
-//     this.basePath = base.endsWith('/') ? base.slice(0, -1) : base;
+  constructor(app: App) {
+    this.pages = {
+      [PagePath.GARAGE]: new GaragePage(app.container),
+      [PagePath.WINNERS]: new WinnersPage(app.container),
+      [PagePath.NOT_FOUND]: new NotFound(app.container),
+    };
+    this.app = app;
 
-//     appEmitter.on<PagePath>('router:navigate', (page) => {
-//       this.navigate(page);
-//     });
-//   }
+    const base = import.meta.env.BASE_URL;
+    this.basePath = base.endsWith('/') ? base.slice(0, -1) : base;
 
-//   public route(): void {
-//     let path = globalThis.location.pathname;
+    appEmitter.on<PagePath>('router:navigate', (page) => {
+      this.navigate(page);
+    });
+  }
 
-//     if (this.basePath && path.startsWith(this.basePath)) {
-//       path = path.replace(this.basePath, '');
-//     }
+  public route(): void {
+    let path = globalThis.location.pathname;
 
-//     if (!path || path === '') {
-//       path = '/';
-//     }
+    if (this.basePath && path.startsWith(this.basePath)) {
+      path = path.replace(this.basePath, '');
+    }
 
-//     const isLogged = dataManager.getUser().name !== '' && dataManager.getUser().surname !== '';
+    if (path === '/' || path === '') {
+      this.navigate(PagePath.GARAGE);
+      return;
+    }
 
-//     if (!isLogged && path !== PagePath.LOGIN) {
-//       this.navigate(PagePath.LOGIN);
-//       return;
-//     }
+    if (this.currentPath === path) return;
 
-//     if (isLogged && path === PagePath.LOGIN) {
-//       this.navigate(PagePath.MAIN);
-//       return;
-//     }
+    if (this.currentPath) {
+      const previousPage = this.pages[this.currentPath];
+      if (previousPage) {
+        previousPage.destroy();
+      }
+    }
 
-//     const isRoundDone = dataManager.getLastResults() !== null;
+    this.currentPath = path;
 
-//     if (path === PagePath.STATISTICS && !isRoundDone) {
-//       this.navigate(PagePath.GAME);
-//       return;
-//     }
+    const page = this.pages[path] || this.pages[PagePath.NOT_FOUND];
 
-//     if (this.currentPath === path) return;
+    this.app.clearContainer();
+    page.render();
+  }
 
-//     this.currentPath = path;
-//     const page = this.pages[path] || this.pages[PagePath.NOT_FOUND];
-//     this.app.clearContainer();
-//     page.render();
-//   }
+  public navigate(path: string): void {
+    const fullPath = this.basePath ? `${this.basePath}${path}` : path;
+    globalThis.history.pushState({}, '', fullPath);
+    this.route();
+  }
 
-//   public navigate(path: string): void {
-//     const fullPath = this.basePath ? `${this.basePath}${path}` : path;
-//     globalThis.history.pushState({}, '', fullPath);
-//     this.route();
-//   }
-
-//   public listen(): void {
-//     globalThis.addEventListener('popstate', () => {
-//       this.route();
-//     });
-//     this.route();
-//   }
-// }
+  public listen(): void {
+    globalThis.addEventListener('popstate', () => {
+      this.route();
+    });
+    this.route();
+  }
+}

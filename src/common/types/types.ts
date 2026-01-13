@@ -12,6 +12,7 @@ export type EmitterEvents = AppEvents | GameEvents;
 
 export type IPage = {
   render: () => void;
+  destroy: () => void;
 };
 
 export type IComponent = {

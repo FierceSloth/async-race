@@ -1,1 +1,1 @@
-npm run lint && npx validate-branch-name
+npm run test && npx validate-branch-name
