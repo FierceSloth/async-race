@@ -64,7 +64,7 @@ export default defineConfig({
     'max-lines-per-function': ['error', { max: 40, skipBlankLines: true, skipComments: true }],
     'no-magic-numbers': [
       'error',
-      { ignore: [0, 1], ignoreArrayIndexes: true, enforceConst: true, detectObjects: true },
+      { ignore: [0, 1, -1], ignoreArrayIndexes: true, enforceConst: true, detectObjects: true },
     ],
     'unicorn/no-abusive-eslint-disable': 'error',
     'unicorn/prefer-export-from': 'error',
