@@ -13,6 +13,5 @@ export class NotFound {
     this.container.node.innerHTML = '<h1> 404 Not Found </h1>';
   }
 
-  // public destroy(): void {
-  // }
+  public destroy(): void {}
 }

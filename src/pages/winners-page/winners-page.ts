@@ -13,6 +13,5 @@ export class WinnersPage {
     this.container.node.innerHTML = '<h1> Winner Page </h1>';
   }
 
-  // public destroy(): void {
-  // }
+  public destroy(): void {}
 }

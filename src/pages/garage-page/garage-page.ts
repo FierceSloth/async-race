@@ -13,6 +13,5 @@ export class GaragePage {
     this.container.node.innerHTML = '<h1> Garage Page </h1>';
   }
 
-  // public destroy(): void {
-  // }
+  public destroy(): void {}
 }
