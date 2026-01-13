@@ -28,7 +28,8 @@
       "@components/*": ["src/components/*"],
       "@pages/*": ["src/pages/*"],
       "@assets/*": ["src/assets/*"],
-      "@data/*": ["src/data/*"],
+      "@api/*": ["src/api/*"],
+      "@service/*": ["src/service/*"],
       "@common/*": ["src/common/*"],
       "@utils/*": ["src/common/utils/*"],
       "@constants/*": ["src/common/constants/*"],
@@ -36,5 +37,5 @@
       "@app-types/*": ["src/common/types/*"]
     }
   },
-  "include": ["src", ".eslintrc.json", "vite.config.ts"]
+  "include": ["src", "eslint.config.mjs", "vite.config.ts"]
 }

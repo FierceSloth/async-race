@@ -1,5 +1,11 @@
 import { defineConfig } from 'vite';
-import path from 'path';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const PORT = 7777;
 
 export default defineConfig({
   base: '/fiercesloth-JSFE2025Q3/async-race/',
@@ -12,7 +18,8 @@ export default defineConfig({
       '@components': path.resolve(__dirname, './src/components'),
       '@pages': path.resolve(__dirname, './src/pages'),
       '@assets': path.resolve(__dirname, './src/assets'),
-      '@data': path.resolve(__dirname, './src/data'),
+      '@api': path.resolve(__dirname, './src/api'),
+      '@services': path.resolve(__dirname, './src/services'),
       '@common': path.resolve(__dirname, './src/common'),
       '@utils': path.resolve(__dirname, './src/common/utils'),
       '@constants': path.resolve(__dirname, './src/common/constants'),
@@ -21,6 +28,6 @@ export default defineConfig({
     },
   },
   server: {
-    port: 7777,
+    port: PORT,
   },
 });
