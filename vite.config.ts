@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import path from 'path';
 
 export default defineConfig({
-  base: '/fiercesloth-JSFE2025Q3/rss-puzzle/',
+  base: '/fiercesloth-JSFE2025Q3/async-race/',
   build: {
     outDir: 'dist',
   },

@@ -36,5 +36,5 @@
       "@app-types/*": ["src/common/types/*"]
     }
   },
-  "include": ["src", ".eslintrc.cjs", "vite.config.js"]
+  "include": ["src", ".eslintrc.json", "vite.config.ts"]
 }
