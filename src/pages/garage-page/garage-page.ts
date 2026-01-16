@@ -3,6 +3,10 @@ import type { Component } from '@common/component';
 // import styles from './garage-page.module.scss';
 // import catImg from '@assets/svg/car-cat.svg';
 
+import { IconButton } from '../../components/ui/icon-button/icon-button';
+import catButton from '@assets/svg/buttons/cat-button.svg';
+import addCats from '@assets/svg/buttons/add-cats.svg';
+
 export class GaragePage {
   private container: Component;
 
@@ -11,7 +15,15 @@ export class GaragePage {
   }
 
   public render(): void {
-    this.container.node.innerHTML = `<h1> Garage Page </h1>`;
+    const buttonAttributes = {
+      imageAlt: 'cat',
+      imageSrc: catButton,
+      subImageAlt: '+100',
+      subImageSrc: addCats,
+    };
+    const button = new IconButton({ attrs: buttonAttributes });
+
+    this.container.append(button);
   }
 
   public destroy(): void {}
