@@ -6,7 +6,7 @@ import { appEmitter } from '@/common/utils/emitter';
 import { DefaultPath, PagePath } from '@/common/enums/enums';
 import { navigateMessages } from '@/common/constants/messages';
 
-type IProps = {} & IComponentChild;
+interface IProps extends IComponentChild {}
 
 export class Card extends Component {
   public readonly contentContainer: Component;

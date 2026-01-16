@@ -1,11 +1,7 @@
+import { GarageControls } from '@/components/features/garage-controls/garage-controls';
 import type { Component } from '@common/component';
 
-// import styles from './garage-page.module.scss';
-// import catImg from '@assets/svg/car-cat.svg';
-
-import { IconButton } from '../../components/ui/icon-button/icon-button';
-import catButton from '@assets/svg/buttons/cat-button.svg';
-import addCats from '@assets/svg/buttons/add-cats.svg';
+import styles from './garage-page.module.scss';
 
 export class GaragePage {
   private container: Component;
@@ -15,15 +11,9 @@ export class GaragePage {
   }
 
   public render(): void {
-    const buttonAttributes = {
-      imageAlt: 'cat',
-      imageSrc: catButton,
-      subImageAlt: '+100',
-      subImageSrc: addCats,
-    };
-    const button = new IconButton({ attrs: buttonAttributes });
+    const controls = new GarageControls({ className: [styles.controls] });
 
-    this.container.append(button);
+    this.container.append(controls);
   }
 
   public destroy(): void {}

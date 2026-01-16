@@ -1,0 +1,30 @@
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 50px;
+  aspect-ratio: 1 / 1;
+
+  border-radius: 100%;
+  border: 2px solid var(--white);
+}
+
+.raceButton {
+  img {
+    width: 22px;
+    transform: translateX(2px);
+  }
+}
+
+.resetButton {
+  img {
+    width: 20px;
+  }
+}

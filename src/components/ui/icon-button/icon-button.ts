@@ -1,18 +1,18 @@
 import { Component } from '@common/component';
 import type { IComponentChild } from '@app-types/types';
-import styles from './button.module.scss';
+import styles from './icon-button.module.scss';
 
-type IProps = {
+interface IProps extends IComponentChild {
   onClick?: (event: MouseEvent) => void;
   attrs: IImageAttributes;
-} & IComponentChild;
+}
 
-type IImageAttributes = {
+interface IImageAttributes {
   imageSrc: string;
-  imageAlt: string;
+  imageAlt?: string;
   subImageSrc?: string;
   subImageAlt?: string;
-};
+}
 
 export class IconButton extends Component {
   constructor({ className = [], attrs, onClick }: IProps) {
@@ -23,14 +23,14 @@ export class IconButton extends Component {
     const image = new Component({
       tag: 'img',
       className: styles.image,
-      attrs: { src: imageSrc, alt: imageAlt },
+      attrs: { src: imageSrc, alt: imageAlt || 'image' },
     });
 
-    if (subImageAlt && subImageSrc) {
+    if (subImageSrc) {
       const subImage = new Component({
         tag: 'img',
         className: styles.subImage,
-        attrs: { src: subImageSrc, alt: subImageAlt },
+        attrs: { src: subImageSrc, alt: subImageAlt || 'subImage' },
       });
 
       this.append(subImage);
