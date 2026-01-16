@@ -2,7 +2,8 @@ import type { Component } from '@/common/component';
 
 // prettier-ignore
 type AppEvents =
-  | 'router:navigate';
+  | 'router:navigate'
+  | 'router:page-changed';
 
 // prettier-ignore
 type GameEvents =

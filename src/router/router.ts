@@ -1,4 +1,4 @@
-import { PagePath } from '@enums/enums';
+import { DefaultPath, PagePath } from '@enums/enums';
 
 import { GaragePage } from '@pages/garage-page/garage-page';
 import { WinnersPage } from '@pages/winners-page/winners-page';
@@ -38,7 +38,7 @@ export class Router {
       path = path.replace(this.basePath, '');
     }
 
-    if (path === '/' || path === '') {
+    if (path === (DefaultPath.EMPTY as string) || path === (DefaultPath.SLASH as string)) {
       this.navigate(PagePath.GARAGE);
       return;
     }
@@ -53,6 +53,7 @@ export class Router {
     }
 
     this.currentPath = path;
+    appEmitter.emit('router:page-changed', this.currentPath);
 
     const page = this.pages[path] || this.pages[PagePath.NOT_FOUND];
 

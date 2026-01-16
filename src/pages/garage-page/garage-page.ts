@@ -1,7 +1,6 @@
-import { Card } from '@/components/ui/card/card';
-import { Component } from '@common/component';
+import type { Component } from '@common/component';
 
-import styles from './garage-page.module.scss';
+// import styles from './garage-page.module.scss';
 // import catImg from '@assets/svg/car-cat.svg';
 
 export class GaragePage {
@@ -12,15 +11,7 @@ export class GaragePage {
   }
 
   public render(): void {
-    const card = new Card({ className: [styles.card] });
-
-    // for (let i = 0; i < 5; i += 1) {
-    //   const cat = new Component({ tag: 'img', className: styles.cat, attrs: { src: catImg } });
-    //   card.append(cat);
-    // }
-
-    const pageContainer = new Component({ className: [styles.garageContainer, 'pageContainer'] }, card);
-    this.container.append(pageContainer);
+    this.container.node.innerHTML = `<h1> Garage Page </h1>`;
   }
 
   public destroy(): void {}
