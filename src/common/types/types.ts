@@ -2,7 +2,8 @@ import type { Component } from '@/common/component';
 
 // prettier-ignore
 type AppEvents =
-  | 'router:navigate';
+  | 'router:navigate'
+  | 'router:page-changed';
 
 // prettier-ignore
 type GameEvents =
@@ -10,19 +11,19 @@ type GameEvents =
 
 export type EmitterEvents = AppEvents | GameEvents;
 
-export type IPage = {
+export interface IPage {
   render: () => void;
   destroy: () => void;
-};
+}
 
-export type IComponent = {
+export interface IComponent {
   tag?: keyof HTMLElementTagNameMap;
   className?: string | string[];
   text?: string;
   attrs?: Record<string, string>;
-};
+}
 
-export type IComponentChild = {
+export interface IComponentChild {
   className?: string[];
   children?: Component[];
-};
+}

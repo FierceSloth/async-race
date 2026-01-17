@@ -3,3 +3,8 @@ export enum PagePath {
   WINNERS = '/winners',
   NOT_FOUND = '/not-found',
 }
+
+export enum DefaultPath {
+  EMPTY = '',
+  SLASH = '/',
+}
