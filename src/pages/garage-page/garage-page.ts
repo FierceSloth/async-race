@@ -1,6 +1,8 @@
-import { GarageControls } from '@/components/features/garage-controls/garage-controls';
-import { pageMessages, titleMessages } from '@/common/constants/messages';
 import { Component } from '@common/component';
+import { GarageControls } from '@components/features/garage-controls/garage-controls';
+import { TrackPagination } from '@components/features/track-pagination/track-pagination';
+
+import { pageMessages, titleMessages } from '@common/constants/messages';
 
 import styles from './garage-page.module.scss';
 
@@ -20,7 +22,7 @@ export class GaragePage {
 
     const trackList = new Component({ className: styles.trackList }); // TODO: add this component
 
-    const trackPagination = new Component({ className: styles.trackPagination }); // TODO: add this component
+    const trackPagination = new TrackPagination({ className: [styles.pagination] });
 
     this.container.appendChildren([mainTitle, controlPanel, trackList, trackPagination]);
   }

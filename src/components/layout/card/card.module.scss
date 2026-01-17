@@ -1,7 +1,6 @@
 .cardWrapper {
   display: flex;
   flex-direction: column;
-
   flex-grow: 1;
 
   width: 100%;
@@ -10,10 +9,12 @@
 .nav {
   display: flex;
   flex-shrink: 0;
+  gap: -10px;
 }
 
 .button {
   all: unset;
+  position: relative;
 
   height: 50px;
   width: 20%;
@@ -33,6 +34,11 @@
   &.active {
     background-color: rgb(from var(--blue-deep) r g b / 0.8);
     color: var(--white);
+    z-index: 2;
+  }
+  &:hover:not(.active) {
+    filter: brightness(1.07);
+    z-index: 3;
   }
 }
 

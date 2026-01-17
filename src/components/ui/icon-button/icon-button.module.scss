@@ -9,11 +9,19 @@
 
   border: 0;
   border-radius: 40px;
-  transition: all 0.3s;
+  transition: all 0.2s;
 
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &:hover:not(.disabled) {
+    background-color: var(--blue-light);
+
+    // .image {
+    //   filter: brightness(0) saturate(100%) invert(94%) sepia(11%) saturate(211%) hue-rotate(68deg) brightness(106%) contrast(91%);
+    // }
+  }
 
   &:active {
     transform: scale(0.95);
@@ -22,13 +30,20 @@
   img {
     user-select: none;
   }
+
+  .disabled {
+    opacity: 0.3;
+  }
 }
 
 .image {
-  width: 26px;
+  width: 25px;
 }
 
 .subImage {
+  position: relative;
+  z-index: 2;
+
   width: 27px;
   aspect-ratio: 1 / 1;
   position: absolute;
