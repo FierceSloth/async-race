@@ -10,7 +10,7 @@ export class App {
     const card = new Card({ className: ['card'] });
     this.container = card.contentContainer;
 
-    const pageContainer = new Component({ className: ['pageContainer'] }, card);
+    const pageContainer = new Component({ attrs: { id: 'app' } }, card);
     document.body.append(pageContainer.node);
 
     this.router = new Router(this);

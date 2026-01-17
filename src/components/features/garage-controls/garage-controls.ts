@@ -44,7 +44,7 @@ export class GarageControls extends Component {
 
     this.totalCarsCounter = new Component({
       className: styles.counter,
-      text: '101',
+      text: '101', // ? temporary
     });
 
     this.createCarButton = new IconButton({

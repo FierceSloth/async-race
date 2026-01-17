@@ -1,19 +1,14 @@
-.garageContainer {
-  min-height: 100%;
-  width: 100%;
-  flex-grow: 1;
-
+.controlPanel {
   display: flex;
-  flex-direction: column;
-  justify-content: start;
+  justify-content: space-between;
+  align-items: center;
 
-  gap: 20px;
+  width: 100%;
 }
 
-.card {
-  min-height: 100%;
-}
-
-.cat {
-  width: 120px;
+.trackList {
+  width: 100%;
+  height: 1050px;
+  border-radius: 30px;
+  background-color: var(--blue-deep);
 }
