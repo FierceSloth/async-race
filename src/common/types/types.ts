@@ -27,3 +27,16 @@ export interface IComponentChild {
   className?: string[];
   children?: Component[];
 }
+
+// ============ Api =============
+
+export interface ICar {
+  name: string;
+  color: string;
+  id: number;
+}
+
+export interface IGetCarsResponse {
+  items: ICar[];
+  total: number;
+}
