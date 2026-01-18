@@ -37,6 +37,6 @@ export interface ICar {
 }
 
 export interface IGetCarsResponse {
-  items: ICar[];
+  cars: ICar[];
   total: number;
 }
