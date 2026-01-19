@@ -22,17 +22,22 @@
 }
 
 .roadLane {
+  position: relative;
   background: url('../../../assets/svg/road.svg');
   background-repeat: repeat;
 
   height: 76px;
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   width: 100%;
 }
 
 .car {
-  width: 100px;
+  position: absolute;
+  left: 10px;
+  top: -50px;
+  width: 110px;
+  aspect-ratio: 1 / 1;
 }
 
 .finishImg {

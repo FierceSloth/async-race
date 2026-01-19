@@ -1,5 +1,6 @@
 import { Component } from '@common/component';
 import { IconButton } from '@/components/ui/icon-button/icon-button';
+import { Car } from '../car/car';
 import type { ICar, IComponentChild, IImageAttributes } from '@app-types/types';
 
 import buttonCat from '@assets/svg/buttons/cat-button.svg';
@@ -8,7 +9,6 @@ import resetIcon from '@assets/svg/buttons/reset.svg';
 import settingsLabel from '@assets/svg/buttons/settings-cat.svg';
 import deleteLabel from '@assets/svg/buttons/delete-cat.svg';
 import finishIcon from '@assets/svg/fish.svg';
-import carIcon from '@assets/svg/car-cat.svg';
 
 import styles from './car-track.module.scss';
 
@@ -61,11 +61,7 @@ export class CarTrack extends Component {
 
     // ? =============== Track Road =================
 
-    this.car = new Component({
-      tag: 'img',
-      className: styles.car,
-      attrs: { alt: 'car', src: carIcon },
-    }); // TODO: add this component
+    this.car = new Car({ className: [styles.car], carAttrs: carAttrs });
 
     this.finishFlag = new Component({
       tag: 'img',
