@@ -7,7 +7,7 @@ type AppEvents =
 
 // prettier-ignore
 type GameEvents =
-  | 'temporary'
+  | 'cars:total-cars-update'
 
 export type EmitterEvents = AppEvents | GameEvents;
 
@@ -26,4 +26,24 @@ export interface IComponent {
 export interface IComponentChild {
   className?: string[];
   children?: Component[];
+}
+
+export interface IImageAttributes {
+  imageSrc: string;
+  imageAlt?: string;
+  subImageSrc?: string;
+  subImageAlt?: string;
+}
+
+// ============ Api =============
+
+export interface ICar {
+  name: string;
+  color: string;
+  id: number;
+}
+
+export interface IGetCarsResponse {
+  cars: ICar[];
+  total: number;
 }

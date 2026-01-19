@@ -1,7 +1,7 @@
 import { Component } from '@/common/component';
 import { IconButton } from '@/components/ui/icon-button/icon-button';
 
-import type { IComponentChild } from '@/common/types/types';
+import type { IComponentChild, IImageAttributes } from '@/common/types/types';
 import styles from './garage-controls.module.scss';
 
 import buttonCat from '@assets/svg/buttons/cat-button.svg';
@@ -9,26 +9,22 @@ import race from '@assets/svg/buttons/race.svg';
 import reset from '@assets/svg/buttons/reset.svg';
 import addCat from '@assets/svg/buttons/add-cat.svg';
 import addCats from '@assets/svg/buttons/add-cats.svg';
+import { gameEmitter } from '@/common/utils/emitter';
 
 interface IProps extends IComponentChild {}
 
-const createCarAttributes = {
-  imageSrc: buttonCat,
-  subImageSrc: addCat,
-};
-
-const generateCarsAttributes = {
-  imageSrc: buttonCat,
-  subImageSrc: addCats,
-};
-
-const raceAttributes = {
-  imageSrc: race,
-};
-
-const resetAttributes = {
-  imageSrc: reset,
-};
+const buttonAttributes = {
+  race: { imageSrc: race },
+  reset: { imageSrc: reset },
+  create: {
+    imageSrc: buttonCat,
+    subImageSrc: addCat,
+  },
+  generate: {
+    imageSrc: buttonCat,
+    subImageSrc: addCats,
+  },
+} as const;
 
 export class GarageControls extends Component {
   private totalCarsCounter: Component;
@@ -44,27 +40,21 @@ export class GarageControls extends Component {
 
     this.totalCarsCounter = new Component({
       className: styles.counter,
-      text: '101', // ? temporary
+      text: '4', // ? temporary
     });
 
-    this.createCarButton = new IconButton({
-      className: [styles.iconButton],
-      attrs: createCarAttributes,
-    });
+    this.createCarButton = this.createButton(buttonAttributes.create);
+    this.generateCarsButton = this.createButton(buttonAttributes.generate);
+    this.raceButton = this.createButton(buttonAttributes.race);
+    this.resetButton = this.createButton(buttonAttributes.reset);
 
-    this.generateCarsButton = new IconButton({
-      className: [styles.iconButton],
-      attrs: generateCarsAttributes,
-    });
+    this.raceButton.addClass(styles.raceButton);
+    this.resetButton.addClass(styles.resetButton);
 
-    this.raceButton = new IconButton({
-      className: [styles.iconButton, styles.raceButton],
-      attrs: raceAttributes,
-    });
+    // ? ============ Emitter =============
 
-    this.resetButton = new IconButton({
-      className: [styles.iconButton, styles.resetButton],
-      attrs: resetAttributes,
+    gameEmitter.on<number>('cars:total-cars-update', (total) => {
+      this.updateCarCounter(total);
     });
 
     // ? ============ Initialization =============
@@ -80,9 +70,16 @@ export class GarageControls extends Component {
     ]);
   }
 
-  // private updateCarCounter(count: string | number): void {
-  //   this.totalCarsCounter.setText(count.toString());
-  // }
+  private createButton(attributes: IImageAttributes): IconButton {
+    return new IconButton({
+      className: [styles.iconButton],
+      attrs: attributes,
+    });
+  }
+
+  private updateCarCounter(count: string | number): void {
+    this.totalCarsCounter.setText(count.toString());
+  }
 
   private addButtonsListeners(): void {
     // TODO: add listeners
