@@ -1,0 +1,66 @@
+.carTrack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 5px;
+}
+
+.carName {
+  font-size: 1.1rem;
+}
+
+.trackLayout {
+  width: 100%;
+  display: flex;
+  gap: 15px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.roadLane {
+  background: url('../../../assets/svg/road.svg');
+  background-repeat: repeat;
+
+  height: 76px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.car {
+  width: 100px;
+}
+
+.finishImg {
+  width: 50px;
+  margin-right: 5%;
+}
+
+.button {
+  width: 35px;
+
+  .iconImage {
+    width: 17px;
+  }
+
+  .iconSubImage {
+    width: 20px;
+  }
+}
+
+.raceButton {
+  .iconImage {
+    width: 15px;
+    transform: translateX(1px);
+  }
+}
+
+.resetButton {
+  .iconImage {
+    width: 14px;
+  }
+}

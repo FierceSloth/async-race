@@ -1,0 +1,11 @@
+.trackList {
+  width: 100%;
+  flex-grow: 1;
+  border-radius: 30px;
+  background-color: var(--blue-deep);
+  padding: 20px 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
