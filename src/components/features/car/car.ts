@@ -5,7 +5,7 @@ import carSvg from '@/assets/svg/car.svg?raw';
 import styles from './car.module.scss';
 
 interface IProps extends IComponentChild {
-  carAttrs: ICar;
+  carAttrs: Omit<ICar, 'id'>;
 }
 
 /**
