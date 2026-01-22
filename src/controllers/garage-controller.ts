@@ -4,6 +4,7 @@ import type { ICar } from '@/common/types/types';
 import type { GaragePage } from '@pages/garage-page/garage-page';
 import { getRandomColor, getRandomName } from '@/common/utils/random';
 import { DEFAULT_CARS } from '@constants/cat-car-brands';
+import { CARS_TO_GENERATE } from '@/common/constants/constants';
 
 export class GarageController {
   private view: GaragePage;
@@ -26,6 +27,10 @@ export class GarageController {
         await this.renderView();
       });
     });
+
+    this.view.controls.generateCarsButton.addListener('click', () => {
+      void this.generateCarsHandler();
+    });
   }
 
   private addTracksListeners(): void {
@@ -44,6 +49,22 @@ export class GarageController {
         await this.renderView();
       }, carData);
     });
+  }
+
+  private async generateCarsHandler(): Promise<void> {
+    const promises = Array.from({ length: CARS_TO_GENERATE }, () => {
+      return api.createCar({
+        name: getRandomName(),
+        color: getRandomColor(),
+      });
+    });
+
+    try {
+      await Promise.all(promises);
+      await this.renderView();
+    } catch (error) {
+      console.error('Error generating cars:', error);
+    }
   }
 
   private async renderView(): Promise<void> {
