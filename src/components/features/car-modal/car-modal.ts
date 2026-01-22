@@ -78,12 +78,14 @@ export class CarModal extends Component {
 
     const timeMs = 10;
     document.body.append(this.node);
-    setTimeout(() => this.addClass(styles.visible), timeMs);
+    document.documentElement.style.overflow = 'hidden';
+    setTimeout(() => this.addClass(styles.open), timeMs);
   }
 
   public close(): void {
     const animationDuration = 300;
-    this.removeClass(styles.visible);
+    this.removeClass(styles.open);
+    document.documentElement.style.overflow = '';
 
     setTimeout(() => {
       this.node.remove();
@@ -112,7 +114,7 @@ export class CarModal extends Component {
       this.close();
     });
 
-    this.addListener('click', (event) => {
+    this.addListener('mousedown', (event) => {
       if (event.target === this.overlay.node) this.close();
     });
   }
