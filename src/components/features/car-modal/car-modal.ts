@@ -6,7 +6,7 @@ import { inputsValues, modalButtonMessages } from '@/common/constants/messages';
 import { getRandomColor, getRandomName } from '@utils/random';
 import styles from './car-modal.module.scss';
 
-type ModalCallback = (carData: Omit<ICar, 'id'>) => void;
+type ModalCallback = (carData: Omit<ICar, 'id'>) => void | Promise<void>;
 
 interface IProps extends IComponentChild {}
 
@@ -103,7 +103,7 @@ export class CarModal extends Component {
     });
     this.acceptButton.addListener('click', () => {
       if (this.onSubmit) {
-        this.onSubmit({
+        void this.onSubmit({
           name: this.nameInput.node.value,
           color: this.colorInput.node.value,
         });

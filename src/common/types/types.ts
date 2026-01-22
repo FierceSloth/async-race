@@ -8,8 +8,16 @@ type AppEvents =
 // prettier-ignore
 type GameEvents =
   | 'cars:total-cars-update'
+  | 'track-list:render'
 
-export type EmitterEvents = AppEvents | GameEvents;
+// prettier-ignore
+type TrackHandlerEvent =
+ | 'track:race-button-click'
+ | 'track:reset-button-click'
+ | 'track:settings-button-click'
+ | 'track:remove-button-click'
+
+export type EmitterEvents = AppEvents | GameEvents | TrackHandlerEvent;
 
 export interface IPage {
   render: () => void;

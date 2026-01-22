@@ -11,6 +11,7 @@ import deleteLabel from '@assets/svg/buttons/delete-cat.svg';
 import finishIcon from '@assets/svg/fish.svg';
 
 import styles from './car-track.module.scss';
+import { gameEmitter } from '@/common/utils/emitter';
 
 interface IProps extends IComponentChild {
   carAttrs: ICar;
@@ -39,6 +40,7 @@ export class CarTrack extends Component {
   private removeButton: IconButton;
 
   private carName: Component;
+  private carData: ICar;
 
   constructor({ className = [], carAttrs }: IProps) {
     super({ className: [styles.carTrack, ...className] });
@@ -48,6 +50,7 @@ export class CarTrack extends Component {
     // ? ================ Car Name ==================
 
     this.carName = new Component({ className: styles.carName, text: name });
+    this.carData = carAttrs;
 
     // ? =============== Controls ===================
 
@@ -81,7 +84,24 @@ export class CarTrack extends Component {
     );
     const trackLayout = new Component({ className: styles.trackLayout }, controls, roadLane);
 
+    this.addButtonListeners();
+
     this.appendChildren([this.carName, trackLayout]);
+  }
+
+  private addButtonListeners(): void {
+    this.raceButton.addListener('click', () => {
+      gameEmitter.emit('track:race-button-click', this.carData);
+    });
+    this.resetButton.addListener('click', () => {
+      gameEmitter.emit('track:reset-button-click', this.carData);
+    });
+    this.settingsButton.addListener('click', () => {
+      gameEmitter.emit('track:settings-button-click', this.carData);
+    });
+    this.removeButton.addListener('click', () => {
+      gameEmitter.emit('track:remove-button-click', this.carData);
+    });
   }
 
   private createButton(attributes: IImageAttributes): IconButton {
