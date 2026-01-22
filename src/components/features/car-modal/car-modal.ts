@@ -92,7 +92,7 @@ export class CarModal extends Component {
 
   private addAllListeners(): void {
     this.nameInput.addListener('input', () => {
-      this.previewCar.updateName(this.nameInput.node.value || getRandomName());
+      this.previewCar.updateName(this.nameInput.node.value || 'Cat Car 2000');
     });
     this.colorInput.addListener('input', () => {
       this.previewCar.updateColor(this.colorInput.node.value);
@@ -103,8 +103,9 @@ export class CarModal extends Component {
     });
     this.acceptButton.addListener('click', () => {
       if (this.onSubmit) {
+        const name = this.nameInput.node.value.trim();
         void this.onSubmit({
-          name: this.nameInput.node.value,
+          name: name || 'Cat Car 2000',
           color: this.colorInput.node.value,
         });
       }
