@@ -19,7 +19,7 @@ export default defineConfig({
       '@pages': path.resolve(__dirname, './src/pages'),
       '@assets': path.resolve(__dirname, './src/assets'),
       '@api': path.resolve(__dirname, './src/api'),
-      '@services': path.resolve(__dirname, './src/services'),
+      '@controllers': path.resolve(__dirname, './src/controllers'),
       '@common': path.resolve(__dirname, './src/common'),
       '@utils': path.resolve(__dirname, './src/common/utils'),
       '@constants': path.resolve(__dirname, './src/common/constants'),
