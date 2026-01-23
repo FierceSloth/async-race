@@ -4,14 +4,17 @@ import type { ICar } from '@app-types/types';
 import type { GaragePage } from '@pages/garage-page/garage-page';
 import { getRandomColor, getRandomName } from '@utils/random';
 import { DEFAULT_CARS } from '@constants/cat-car-brands';
-import { CARS_TO_GENERATE, pageLimit } from '@constants/constants';
+import { CARS_TO_GENERATE, pageLimit, STORAGE_KEY } from '@constants/constants';
 
 export class GarageController {
   private view: GaragePage;
-  private currentPage = 1;
+  private currentPage: number;
 
   constructor(view: GaragePage) {
     this.view = view;
+
+    const savedPage = sessionStorage.getItem(STORAGE_KEY);
+    this.currentPage = savedPage ? Number(savedPage) : 1;
 
     this.addControlsListeners();
     this.addTracksListeners();
@@ -24,6 +27,8 @@ export class GarageController {
   // ? =============== View Methods =======================
 
   private async renderView(): Promise<void> {
+    sessionStorage.setItem(STORAGE_KEY, this.currentPage.toString());
+
     try {
       const carsResponse = await api.getCars(this.currentPage);
       const { cars, total } = carsResponse;
