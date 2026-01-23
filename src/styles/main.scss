@@ -16,6 +16,9 @@ html {
   min-height: 100%;
 
   overflow-y: scroll;
+  scrollbar-gutter: stable;
+
+  background-color: var(--blue-black);
 }
 
 html::before {
@@ -50,6 +53,10 @@ body {
 
 .card {
   gap: 15px;
+}
+
+.hide {
+  overflow: hidden;
 }
 
 #app {

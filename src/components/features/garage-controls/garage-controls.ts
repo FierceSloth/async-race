@@ -27,11 +27,11 @@ const buttonAttributes = {
 } as const;
 
 export class GarageControls extends Component {
-  private totalCarsCounter: Component;
-  private createCarButton: IconButton;
-  private generateCarsButton: IconButton;
-  private raceButton: IconButton;
-  private resetButton: IconButton;
+  public readonly totalCarsCounter: Component;
+  public readonly createCarButton: IconButton;
+  public readonly generateCarsButton: IconButton;
+  public readonly raceButton: IconButton;
+  public readonly resetButton: IconButton;
 
   constructor({ className = [] }: IProps) {
     super({ className: [styles.controls, ...className] });
@@ -40,7 +40,7 @@ export class GarageControls extends Component {
 
     this.totalCarsCounter = new Component({
       className: styles.counter,
-      text: '4', // ? temporary
+      text: '4',
     });
 
     this.createCarButton = this.createButton(buttonAttributes.create);
@@ -59,8 +59,6 @@ export class GarageControls extends Component {
 
     // ? ============ Initialization =============
 
-    this.addButtonsListeners();
-
     this.appendChildren([
       this.totalCarsCounter,
       this.createCarButton,
@@ -70,18 +68,14 @@ export class GarageControls extends Component {
     ]);
   }
 
+  public updateCarCounter(count: string | number): void {
+    this.totalCarsCounter.setText(count.toString());
+  }
+
   private createButton(attributes: IImageAttributes): IconButton {
     return new IconButton({
       className: [styles.iconButton],
       attrs: attributes,
     });
-  }
-
-  private updateCarCounter(count: string | number): void {
-    this.totalCarsCounter.setText(count.toString());
-  }
-
-  private addButtonsListeners(): void {
-    // TODO: add listeners
   }
 }
