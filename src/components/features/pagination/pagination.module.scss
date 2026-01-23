@@ -25,7 +25,6 @@
   &:hover:not(.disabled) {
     background-color: var(--blue-deep);
     color: var(--blue-light);
-    transform: scale(1.1);
   }
 
   &.disabled {

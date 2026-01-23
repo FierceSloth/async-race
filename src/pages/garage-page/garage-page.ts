@@ -1,7 +1,7 @@
 import { Component } from '@common/component';
 import { GarageControls } from '@components/features/garage-controls/garage-controls';
 import { TrackList } from '@/components/features/track-list/track-list';
-import { TrackPagination } from '@components/features/track-pagination/track-pagination';
+import { Pagination } from '@/components/features/pagination/pagination';
 import { CarModal } from '@/components/features/car-modal/car-modal';
 
 import { pageMessages, titleMessages } from '@common/constants/messages';
@@ -12,7 +12,7 @@ import { GarageController } from '@/controllers/garage-controller';
 export class GaragePage {
   public controls!: GarageControls;
   public trackList!: TrackList;
-  public pagination!: TrackPagination;
+  public pagination!: Pagination;
 
   public modal = new CarModal({});
 
@@ -32,7 +32,7 @@ export class GaragePage {
 
     this.trackList = new TrackList({ className: [styles.trackList] });
 
-    this.pagination = new TrackPagination({ className: [styles.pagination] });
+    this.pagination = new Pagination({ className: [styles.pagination] });
 
     this.container.appendChildren([mainTitle, controlPanel, this.trackList, this.pagination]);
 
