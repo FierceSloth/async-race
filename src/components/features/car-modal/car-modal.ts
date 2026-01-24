@@ -30,6 +30,7 @@ export class CarModal extends Component {
       carAttrs: {
         name: inputsValues.defaultName,
         color: inputsValues.defaultColor,
+        id: 0,
       },
     });
 

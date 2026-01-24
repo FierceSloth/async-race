@@ -91,10 +91,10 @@ export class CarTrack extends Component {
 
   private addButtonListeners(): void {
     this.raceButton.addListener('click', () => {
-      gameEmitter.emit('track:race-button-click', this.carData);
+      gameEmitter.emit('track:race-button-click', this.carData.id);
     });
     this.resetButton.addListener('click', () => {
-      gameEmitter.emit('track:reset-button-click', this.carData);
+      gameEmitter.emit('track:reset-button-click', this.carData.id);
     });
     this.settingsButton.addListener('click', () => {
       gameEmitter.emit('track:settings-button-click', this.carData);

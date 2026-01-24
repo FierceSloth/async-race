@@ -29,12 +29,13 @@
   height: 76px;
   display: flex;
   justify-content: end;
+  padding: 0 30px;
   width: 100%;
 }
 
 .car {
   position: absolute;
-  left: 10px;
+  left: 0px;
   top: -50px;
   width: 110px;
   aspect-ratio: 1 / 1;
@@ -42,7 +43,6 @@
 
 .finishImg {
   width: 50px;
-  margin-right: 5%;
 }
 
 .button {

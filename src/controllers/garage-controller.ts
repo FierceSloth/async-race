@@ -9,6 +9,7 @@ import { CARS_TO_GENERATE, carsLimit, STORAGE_KEY } from '@constants/constants';
 export class GarageController {
   private view: GaragePage;
   private currentPage: number;
+  private animations = new Map<number, number>();
 
   constructor(view: GaragePage) {
     this.view = view;
@@ -89,6 +90,12 @@ export class GarageController {
   }
 
   private addTracksListeners(): void {
+    gameEmitter.on<number>('track:race-button-click', (carId) => {
+      void this.raceCarHandler(carId);
+    });
+    gameEmitter.on<number>('track:reset-button-click', (carId) => {
+      void this.stopCarHandler(carId);
+    });
     gameEmitter.on<ICar>('track:remove-button-click', (carData) => {
       void this.removeCarHandler(carData);
     });
@@ -113,6 +120,31 @@ export class GarageController {
   }
 
   // ? ============== Listener Handler ====================
+
+  private async raceCarHandler(id: number): Promise<void> {
+    this.stopAnimation(id);
+
+    try {
+      const response = await api.startEngine(id);
+      const { distance, velocity } = response;
+      const time = distance / velocity;
+
+      this.animateCar(id, time);
+      await api.driveEngine(id);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'Car has been broken down') {
+        this.stopAnimation(id);
+      } else {
+        console.error(error);
+      }
+    }
+  }
+
+  private async stopCarHandler(id: number): Promise<void> {
+    this.stopAnimation(id);
+    this.animateReturn(id);
+    await api.stopEngine(id);
+  }
 
   private async generateCarsHandler(): Promise<void> {
     const promises = Array.from({ length: CARS_TO_GENERATE }, () => {
@@ -145,5 +177,85 @@ export class GarageController {
   private async paginationNextHandler(): Promise<void> {
     this.currentPage += 1;
     await this.renderView();
+  }
+
+  // ? ============== Utils Methods =======================
+
+  private animateCar(carId: number, duration: number): void {
+    const carElement = document.querySelector<HTMLElement>(`#car-${carId}`);
+    const trackElement = carElement?.parentElement;
+    if (!carElement || !trackElement) return;
+
+    let start: null | number = null;
+
+    const trackWidth = trackElement.clientWidth || window.innerWidth;
+
+    const trackPadding = Number.parseFloat(getComputedStyle(trackElement).paddingLeft);
+    const carWidth = carElement.clientWidth;
+
+    const distanceToDrive = trackWidth - trackPadding - carWidth;
+
+    const step = (timestamp: number): void => {
+      if (!start) start = timestamp;
+
+      const progressPercent = Math.min((timestamp - start) / duration, 1);
+      const px = progressPercent * distanceToDrive;
+
+      if (carElement) carElement.style.transform = `translateX(${px}px)`;
+
+      if (progressPercent < 1) {
+        const requestId = requestAnimationFrame(step);
+        this.animations.set(carId, requestId);
+      } else {
+        this.animations.delete(carId);
+      }
+    };
+
+    const requestId = requestAnimationFrame(step);
+    this.animations.set(carId, requestId);
+  }
+
+  private animateReturn(carId: number): void {
+    const carElement = document.querySelector<HTMLElement>(`#car-${carId}`);
+    if (!carElement) return;
+
+    this.stopAnimation(carId);
+
+    const currentStyle = getComputedStyle(carElement);
+    const matrix = new DOMMatrix(currentStyle.transform);
+    const currentTranslateX = matrix.m41;
+
+    if (currentTranslateX <= 0) return;
+
+    const duration = 1000;
+    let start: number | null = null;
+
+    const step = (timestamp: number): void => {
+      if (!start) start = timestamp;
+      const progressPercent = (timestamp - start) / duration;
+
+      const newTranslateX = currentTranslateX * (1 - progressPercent);
+
+      if (progressPercent < 1) {
+        carElement.style.transform = `translateX(${newTranslateX}px)`;
+
+        const requestId = requestAnimationFrame(step);
+        this.animations.set(carId, requestId);
+      } else {
+        carElement.style.transform = 'translateX(0px)';
+        this.animations.delete(carId);
+      }
+    };
+
+    const requestId = requestAnimationFrame(step);
+    this.animations.set(carId, requestId);
+  }
+
+  private stopAnimation(carId: number): void {
+    const requestId = this.animations.get(carId);
+    if (requestId) {
+      cancelAnimationFrame(requestId);
+      this.animations.delete(carId);
+    }
   }
 }

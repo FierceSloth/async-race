@@ -5,7 +5,7 @@ import carSvg from '@/assets/svg/car.svg?raw';
 import styles from './car.module.scss';
 
 interface IProps extends IComponentChild {
-  carAttrs: Omit<ICar, 'id'>;
+  carAttrs: ICar;
 }
 
 /**
@@ -19,8 +19,9 @@ export class Car extends Component {
   constructor({ className = [], carAttrs }: IProps) {
     super({ className: [styles.car, ...className] });
 
-    const { color, name } = carAttrs;
+    const { color, name, id } = carAttrs;
 
+    this.node.id = `car-${id}`;
     this.node.innerHTML = carSvg;
     this.textEl = this.node.querySelector('.car-name');
 
