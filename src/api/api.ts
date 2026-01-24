@@ -1,18 +1,18 @@
-import type { ICar, IGetCarsResponse } from '@app-types/types';
-import { ERROR_STATUS_404, JSON_HEADERS, pageLimit } from '@constants/constants';
+import type { ICar, IEngineResponse, IEngineStatus, IGetCarsResponse } from '@app-types/types';
+import { ERROR_STATUS_404, ERROR_STATUS_500, JSON_HEADERS, carsLimit } from '@constants/constants';
 
 class Api {
   private readonly baseUrl = 'http://127.0.0.1:3000';
 
   private readonly garageUrl = `${this.baseUrl}/garage`;
   private readonly winnersUrl = `${this.baseUrl}/winners`;
-  // private readonly engineUrl = `${this.baseUrl}/engine`;
+  private readonly engineUrl = `${this.baseUrl}/engine`;
 
-  private readonly pageLimit = pageLimit;
+  private readonly carsLimit = carsLimit;
 
   public async getCars(page: number): Promise<IGetCarsResponse> {
     try {
-      const response = await fetch(`${this.garageUrl}?_page=${page}&_limit=${this.pageLimit}`);
+      const response = await fetch(`${this.garageUrl}?_page=${page}&_limit=${this.carsLimit}`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch cars: ${response.statusText}`);
@@ -112,6 +112,40 @@ class Api {
     } catch (error) {
       console.error(`Error fetching car:`, error);
     }
+  }
+
+  public async startEngine(id: number): Promise<IEngineResponse> {
+    const response = await fetch(`${this.engineUrl}?id=${id}&status=started`, {
+      method: 'PATCH',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to start engine for car ${id}`);
+    }
+
+    return response.json();
+  }
+
+  public async stopEngine(id: number): Promise<void> {
+    const response = await fetch(`${this.engineUrl}?id=${id}&status=stopped`, {
+      method: 'PATCH',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to stop engine for car ${id}`);
+    }
+  }
+
+  public async driveEngine(id: number): Promise<IEngineStatus> {
+    const response = await fetch(`${this.engineUrl}?id=${id}&status=drive`, { method: 'PATCH' });
+    if (response.status === ERROR_STATUS_500) {
+      throw new Error('Car has been broken down');
+    }
+
+    if (!response.ok) {
+      throw new Error(`Drive mode failed for car ${id}`);
+    }
+    return response.json();
   }
 }
 

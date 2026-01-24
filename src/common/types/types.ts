@@ -45,6 +45,8 @@ export interface IImageAttributes {
 
 // ============ Api =============
 
+export type EngineStatus = 'started' | 'stopped';
+
 export interface ICar {
   name: string;
   color: string;
@@ -54,4 +56,13 @@ export interface ICar {
 export interface IGetCarsResponse {
   cars: ICar[];
   total: number;
+}
+
+export interface IEngineResponse {
+  velocity: number;
+  distance: number;
+}
+
+export interface IEngineStatus {
+  success: EngineStatus;
 }

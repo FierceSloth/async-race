@@ -4,7 +4,7 @@ import type { ICar } from '@app-types/types';
 import type { GaragePage } from '@pages/garage-page/garage-page';
 import { getRandomColor, getRandomName } from '@utils/random';
 import { DEFAULT_CARS } from '@constants/cat-car-brands';
-import { CARS_TO_GENERATE, pageLimit, STORAGE_KEY } from '@constants/constants';
+import { CARS_TO_GENERATE, carsLimit, STORAGE_KEY } from '@constants/constants';
 
 export class GarageController {
   private view: GaragePage;
@@ -32,7 +32,7 @@ export class GarageController {
     try {
       const carsResponse = await api.getCars(this.currentPage);
       const { cars, total } = carsResponse;
-      const maxPage = Math.ceil(total / pageLimit);
+      const maxPage = Math.ceil(total / carsLimit);
 
       if (cars.length <= 0 && this.currentPage > 1) {
         this.currentPage -= 1;
