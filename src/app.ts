@@ -1,6 +1,7 @@
 import { Router } from '@/router/router';
 import { Card } from './components/layout/card/card';
 import { Component } from './common/component';
+import { gameEmitter } from './common/utils/emitter';
 
 export class App {
   public readonly container: Component;
@@ -22,5 +23,6 @@ export class App {
 
   public clearContainer(): void {
     this.container.destroyChildren();
+    gameEmitter.clear();
   }
 }

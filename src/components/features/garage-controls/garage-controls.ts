@@ -56,6 +56,9 @@ export class GarageControls extends Component {
     gameEmitter.on<number>('cars:total-cars-update', (total) => {
       this.updateCarCounter(total);
     });
+    gameEmitter.on<boolean>('ui:toggle-blocking', (isDisabled) => {
+      this.toggleControlButtons(isDisabled);
+    });
 
     // ? ============ Initialization =============
 
@@ -77,5 +80,11 @@ export class GarageControls extends Component {
       className: [styles.iconButton],
       attrs: attributes,
     });
+  }
+
+  private toggleControlButtons(isDisabled: boolean): void {
+    this.raceButton.setDisabled(isDisabled);
+    this.generateCarsButton.setDisabled(isDisabled);
+    this.createCarButton.setDisabled(isDisabled);
   }
 }

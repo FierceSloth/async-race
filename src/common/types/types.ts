@@ -8,14 +8,15 @@ type AppEvents =
 // prettier-ignore
 type GameEvents =
   | 'cars:total-cars-update'
+  | 'ui:toggle-blocking'
   | 'track-list:render'
 
 // prettier-ignore
 type TrackHandlerEvent =
- | 'track:race-button-click'
- | 'track:reset-button-click'
- | 'track:settings-button-click'
- | 'track:remove-button-click'
+  | 'track:race-button-click'
+  | 'track:reset-button-click'
+  | 'track:settings-button-click'
+  | 'track:remove-button-click'
 
 export type EmitterEvents = AppEvents | GameEvents | TrackHandlerEvent;
 

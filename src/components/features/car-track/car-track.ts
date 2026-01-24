@@ -87,6 +87,25 @@ export class CarTrack extends Component {
     this.addButtonListeners();
 
     this.appendChildren([this.carName, trackLayout]);
+
+    gameEmitter.on<boolean>('ui:toggle-blocking', (isDisabled) => {
+      this.toggleControlButtons(isDisabled);
+    });
+  }
+
+  public setPending(isPending: boolean): void {
+    this.raceButton.setDisabled(isPending);
+    this.resetButton.setDisabled(isPending);
+  }
+
+  public setRunning(isRunning: boolean): void {
+    this.raceButton.setDisabled(isRunning);
+    this.resetButton.setDisabled(!isRunning);
+  }
+
+  private toggleControlButtons(isDisabled: boolean): void {
+    this.settingsButton.setDisabled(isDisabled);
+    this.removeButton.setDisabled(isDisabled);
   }
 
   private addButtonListeners(): void {
@@ -102,6 +121,8 @@ export class CarTrack extends Component {
     this.removeButton.addListener('click', () => {
       gameEmitter.emit('track:remove-button-click', this.carData);
     });
+
+    this.resetButton.setDisabled(true);
   }
 
   private createButton(attributes: IImageAttributes): IconButton {

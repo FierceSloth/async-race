@@ -6,10 +6,13 @@ import { getRandomColor, getRandomName } from '@utils/random';
 import { DEFAULT_CARS } from '@constants/cat-car-brands';
 import { CARS_TO_GENERATE, carsLimit, STORAGE_KEY } from '@constants/constants';
 
+const returnAnimationDuration = 1000;
+
 export class GarageController {
   private view: GaragePage;
   private currentPage: number;
   private animations = new Map<number, number>();
+  private activeCars = new Set<number>();
 
   constructor(view: GaragePage) {
     this.view = view;
@@ -122,10 +125,20 @@ export class GarageController {
   // ? ============== Listener Handler ====================
 
   private async raceCarHandler(id: number): Promise<void> {
+    const track = this.view.trackList.tracks.get(id);
+    if (!track) return;
+
     this.stopAnimation(id);
+    this.activeCars.add(id);
+
+    gameEmitter.emit('ui:toggle-blocking', true);
+    track.setPending(true);
 
     try {
       const response = await api.startEngine(id);
+      track.setPending(false);
+      track.setRunning(true);
+
       const { distance, velocity } = response;
       const time = distance / velocity;
 
@@ -141,7 +154,23 @@ export class GarageController {
   }
 
   private async stopCarHandler(id: number): Promise<void> {
+    const track = this.view.trackList.tracks.get(id);
+    if (!track) return;
+
     this.stopAnimation(id);
+    this.activeCars.delete(id);
+
+    track.setPending(true);
+
+    setTimeout(() => {
+      if (this.activeCars.size === 0) {
+        gameEmitter.emit('ui:toggle-blocking', false);
+      }
+
+      track.setPending(false);
+      track.setRunning(false);
+    }, returnAnimationDuration);
+
     this.animateReturn(id);
     await api.stopEngine(id);
   }
@@ -190,10 +219,9 @@ export class GarageController {
 
     const trackWidth = trackElement.clientWidth || window.innerWidth;
 
-    const trackPadding = Number.parseFloat(getComputedStyle(trackElement).paddingLeft);
     const carWidth = carElement.clientWidth;
 
-    const distanceToDrive = trackWidth - trackPadding - carWidth;
+    const distanceToDrive = trackWidth - carWidth;
 
     const step = (timestamp: number): void => {
       if (!start) start = timestamp;
@@ -227,12 +255,11 @@ export class GarageController {
 
     if (currentTranslateX <= 0) return;
 
-    const duration = 1000;
     let start: number | null = null;
 
     const step = (timestamp: number): void => {
       if (!start) start = timestamp;
-      const progressPercent = (timestamp - start) / duration;
+      const progressPercent = (timestamp - start) / returnAnimationDuration;
 
       const newTranslateX = currentTranslateX * (1 - progressPercent);
 
