@@ -36,7 +36,7 @@ export class GarageControls extends Component {
   constructor({ className = [] }: IProps) {
     super({ className: [styles.controls, ...className] });
 
-    // ? ================ Buttons ================
+    //? ================ Buttons ================
 
     this.totalCarsCounter = new Component({
       className: styles.counter,
@@ -51,7 +51,7 @@ export class GarageControls extends Component {
     this.raceButton.addClass(styles.raceButton);
     this.resetButton.addClass(styles.resetButton);
 
-    // ? ============ Emitter =============
+    //? ============ Emitter =============
 
     gameEmitter.on<number>('cars:total-cars-update', (total) => {
       this.updateCarCounter(total);
@@ -60,7 +60,7 @@ export class GarageControls extends Component {
       this.toggleControlButtons(isDisabled);
     });
 
-    // ? ============ Initialization =============
+    //? ============ Initialization =============
 
     this.appendChildren([
       this.totalCarsCounter,

@@ -27,8 +27,9 @@ export class GarageController {
     void this.renderView();
     void this.updateDefaultCars();
   }
-
-  // ? =============== View Methods =======================
+  //? ========================================================================== */
+  //*                               View Methods                                 */
+  //? ========================================================================== */
 
   private async renderView(): Promise<void> {
     sessionStorage.setItem(STORAGE_KEY, this.currentPage.toString());
@@ -77,14 +78,13 @@ export class GarageController {
     await this.renderView();
   }
 
-  // ? ============== Listener Methods ====================
+  //? ========================================================================== */
+  //*                          Listeners Initialization                          */
+  //? ========================================================================== */
 
   private addControlsListeners(): void {
     this.view.controls.createCarButton.addListener('click', () => {
-      this.view.modal.open(async (carData) => {
-        await api.createCar(carData);
-        await this.renderView();
-      });
+      void this.createCarHandler();
     });
 
     this.view.controls.generateCarsButton.addListener('click', () => {
@@ -103,13 +103,7 @@ export class GarageController {
       void this.removeCarHandler(carData);
     });
     gameEmitter.on<ICar>('track:settings-button-click', (carData) => {
-      this.view.modal.open(async (newCarData) => {
-        await api.updateCar({
-          id: carData.id,
-          ...newCarData,
-        });
-        await this.renderView();
-      }, carData);
+      void this.settingsCarHandler(carData);
     });
   }
 
@@ -122,7 +116,11 @@ export class GarageController {
     });
   }
 
-  // ? ============== Listener Handler ====================
+  //? ========================================================================== */
+  //*                              Listeners Handler                             */
+  //? ========================================================================== */
+
+  //? =========== Track Handlers ===================
 
   private async raceCarHandler(id: number): Promise<void> {
     const track = this.view.trackList.tracks.get(id);
@@ -175,6 +173,23 @@ export class GarageController {
     await api.stopEngine(id);
   }
 
+  private async removeCarHandler(carData: ICar): Promise<void> {
+    await api.deleteCar(carData);
+    await this.renderView();
+  }
+
+  private settingsCarHandler(carData: ICar): void {
+    this.view.modal.open(async (newCarData) => {
+      await api.updateCar({
+        id: carData.id,
+        ...newCarData,
+      });
+      await this.renderView();
+    }, carData);
+  }
+
+  //? ========== Main Control Handlers =============
+
   private async generateCarsHandler(): Promise<void> {
     const promises = Array.from({ length: CARS_TO_GENERATE }, () => {
       return api.createCar({
@@ -191,10 +206,14 @@ export class GarageController {
     }
   }
 
-  private async removeCarHandler(carData: ICar): Promise<void> {
-    await api.deleteCar(carData);
-    await this.renderView();
+  private createCarHandler(): void {
+    this.view.modal.open(async (carData) => {
+      await api.createCar(carData);
+      await this.renderView();
+    });
   }
+
+  // ? ========== Pagination Handlers =============
 
   private async paginationPrevHandler(): Promise<void> {
     if (this.currentPage > 1) {
@@ -208,7 +227,9 @@ export class GarageController {
     await this.renderView();
   }
 
-  // ? ============== Utils Methods =======================
+  //? ========================================================================== */
+  //*                                Utils Methods                               */
+  //? ========================================================================== */
 
   private animateCar(carId: number, duration: number): void {
     const carElement = document.querySelector<HTMLElement>(`#car-${carId}`);

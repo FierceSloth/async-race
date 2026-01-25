@@ -47,12 +47,12 @@ export class CarTrack extends Component {
 
     const { name } = carAttrs;
 
-    // ? ================ Car Name ==================
+    //? ================ Car Name ==================
 
     this.carName = new Component({ className: styles.carName, text: name });
     this.carData = carAttrs;
 
-    // ? =============== Controls ===================
+    //? =============== Controls ===================
 
     this.raceButton = this.createButton(buttonAttributes.race);
     this.resetButton = this.createButton(buttonAttributes.reset);
@@ -62,7 +62,7 @@ export class CarTrack extends Component {
     this.raceButton.addClass(styles.raceButton);
     this.resetButton.addClass(styles.resetButton);
 
-    // ? =============== Track Road =================
+    //? =============== Track Road =================
 
     this.car = new Car({ className: [styles.car], carAttrs: carAttrs });
 
@@ -72,7 +72,7 @@ export class CarTrack extends Component {
       attrs: { alt: 'finish fish', src: finishIcon },
     });
 
-    // ? ============ Containers ===============
+    //? ============ Containers ===============
 
     const roadLane = new Component({ className: styles.roadLane }, this.car, this.finishFlag);
     const controls = new Component(
