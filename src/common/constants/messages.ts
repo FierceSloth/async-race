@@ -17,6 +17,10 @@ export const modalButtonMessages = {
   cancel: 'Cancel',
 };
 
+export const winnerModalMessages = {
+  noWinner: '☠️ No Winner All engines were broken during the race.',
+};
+
 export const inputsValues = {
   namePlaceholder: 'Type car name...',
   defaultName: 'Cat Car 2000',

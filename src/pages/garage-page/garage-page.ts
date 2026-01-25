@@ -3,6 +3,7 @@ import { GarageControls } from '@components/features/garage-controls/garage-cont
 import { TrackList } from '@/components/features/track-list/track-list';
 import { Pagination } from '@/components/features/pagination/pagination';
 import { CarModal } from '@/components/features/car-modal/car-modal';
+import { WinnerModal } from '@/components/features/winner-modal/winner-modal';
 
 import { pageMessages, titleMessages } from '@common/constants/messages';
 
@@ -14,7 +15,8 @@ export class GaragePage {
   public trackList!: TrackList;
   public pagination!: Pagination;
 
-  public modal = new CarModal({});
+  public carModal = new CarModal({});
+  public winnerModal = new WinnerModal({});
 
   private container: Component;
 

@@ -171,7 +171,6 @@ export class GarageController {
     const track = this.view.trackList.tracks.get(id);
     if (!track) return;
 
-    this.activeCars.delete(id);
     this.stopAnimation(id);
 
     track.setPending(true);
@@ -179,6 +178,8 @@ export class GarageController {
     await api.stopEngine(id);
 
     setTimeout(() => {
+      this.activeCars.delete(id);
+
       if (this.activeCars.size + this.waitingCars.size === 0) {
         gameEmitter.emit('ui:toggle-blocking', false);
         appEmitter.emit('ui:toggle-blocking', false);
@@ -198,7 +199,7 @@ export class GarageController {
   }
 
   private settingsCarHandler(carData: ICar): void {
-    this.view.modal.open(async (newCarData) => {
+    this.view.carModal.open(async (newCarData) => {
       await api.updateCar({
         id: carData.id,
         ...newCarData,
@@ -228,6 +229,8 @@ export class GarageController {
   private async raceAllCarsHandler(): Promise<void> {
     const tracks = [...this.view.trackList.tracks.entries()];
 
+    if (tracks.length === 0) return;
+
     const controls = this.view.controls;
     controls.setPending(true);
 
@@ -238,12 +241,14 @@ export class GarageController {
 
     try {
       const winnerData = await Promise.any(promises);
-      const carName = this.view.trackList.tracks.get(winnerData.id)?.getCarName();
+      const carData = this.view.trackList.tracks.get(winnerData.id)?.getCarData();
 
-      console.log(`🏆 Winner is ${carName} with time ${winnerData.time}s!`);
+      if (carData) {
+        this.view.winnerModal.open(() => {}, { ...carData, time: winnerData.time });
+      }
     } catch (error) {
       if (error instanceof AggregateError) {
-        console.log('all cars are broken');
+        this.view.winnerModal.open(() => {});
       } else {
         console.error(error);
       }
@@ -264,7 +269,7 @@ export class GarageController {
   }
 
   private createCarHandler(): void {
-    this.view.modal.open(async (carData) => {
+    this.view.carModal.open(async (carData) => {
       await api.createCar(carData);
       await this.renderView();
     });

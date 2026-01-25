@@ -93,8 +93,8 @@ export class CarTrack extends Component {
     });
   }
 
-  public getCarName(): string {
-    return this.carData.name;
+  public getCarData(): ICar {
+    return this.carData;
   }
 
   public setPending(isPending: boolean): void {
