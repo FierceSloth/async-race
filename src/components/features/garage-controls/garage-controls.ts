@@ -33,6 +33,8 @@ export class GarageControls extends Component {
   public readonly raceButton: IconButton;
   public readonly resetButton: IconButton;
 
+  public isPending = false;
+
   constructor({ className = [] }: IProps) {
     super({ className: [styles.controls, ...className] });
 
@@ -78,6 +80,7 @@ export class GarageControls extends Component {
   }
 
   public setPending(isPending: boolean): void {
+    this.isPending = isPending;
     this.toggleControlButtons(true);
     this.resetButton.setDisabled(isPending);
   }

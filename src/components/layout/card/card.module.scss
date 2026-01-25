@@ -36,9 +36,13 @@
     color: var(--white);
     z-index: 2;
   }
-  &:hover:not(.active) {
+  &:hover:not(.active, [disabled]) {
     filter: brightness(1.07);
     z-index: 3;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
   }
 }
 

@@ -2,7 +2,7 @@ import { Component } from '@/common/component';
 import type { IComponentChild } from '@/common/types/types';
 
 import styles from './card.module.scss';
-import { appEmitter } from '@/common/utils/emitter';
+import { appEmitter } from '@utils/emitter';
 import { DefaultPath, PagePath } from '@/common/enums/enums';
 import { navigateMessages } from '@/common/constants/messages';
 
@@ -39,6 +39,10 @@ export class Card extends Component {
     });
 
     appEmitter.on<PagePath | DefaultPath>('router:page-changed', (path) => this.updateActiveButton(path));
+    appEmitter.on<boolean>('ui:toggle-blocking', (isDisabled) => {
+      this.garageButton.setDisabled(isDisabled);
+      this.winnersButton.setDisabled(isDisabled);
+    });
 
     this.appendChildren([navigateMenu, this.contentContainer]);
   }

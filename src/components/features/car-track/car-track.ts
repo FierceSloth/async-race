@@ -93,6 +93,10 @@ export class CarTrack extends Component {
     });
   }
 
+  public getCarName(): string {
+    return this.carData.name;
+  }
+
   public setPending(isPending: boolean): void {
     this.raceButton.setDisabled(isPending);
     this.resetButton.setDisabled(isPending);

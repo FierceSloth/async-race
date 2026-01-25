@@ -1,5 +1,5 @@
 import { api } from '@api/api';
-import { gameEmitter } from '@utils/emitter';
+import { appEmitter, gameEmitter } from '@utils/emitter';
 import type { ICar } from '@app-types/types';
 import type { GaragePage } from '@pages/garage-page/garage-page';
 import { getRandomColor, getRandomName } from '@utils/random';
@@ -12,7 +12,9 @@ export class GarageController {
   private view: GaragePage;
   private currentPage: number;
   private animations = new Map<number, number>();
+
   private activeCars = new Set<number>();
+  private waitingCars = new Set<number>();
 
   constructor(view: GaragePage) {
     this.view = view;
@@ -91,6 +93,10 @@ export class GarageController {
       void this.generateCarsHandler();
     });
 
+    this.view.controls.raceButton.addListener('click', () => {
+      void this.raceAllCarsHandler();
+    });
+
     this.view.controls.resetButton.addListener('click', () => {
       void this.resetCarsHandler();
     });
@@ -126,36 +132,33 @@ export class GarageController {
 
   //? =========== Track Handlers ===================
 
-  private async raceCarHandler(id: number): Promise<void> {
-    const track = this.view.trackList.tracks.get(id);
-    const controls = this.view.controls;
-    if (!track) return;
-
+  private async raceCarHandler(id: number, blockState = false): Promise<{ id: number; time: number }> {
     this.stopAnimation(id);
     this.activeCars.add(id);
 
     gameEmitter.emit('ui:toggle-blocking', true);
-    track.setPending(true);
-    controls.setPending(true);
+    appEmitter.emit('ui:toggle-blocking', true);
+    if (!blockState) this.setPending(id);
 
     try {
       const response = await api.startEngine(id);
-      track.setPending(false);
-      track.setRunning(true);
-
-      controls.setPending(false);
+      if (!blockState) this.resetPending(id);
 
       const { distance, velocity } = response;
       const time = distance / velocity;
 
       this.animateCar(id, time);
       await api.driveEngine(id);
+
+      const msPerSecond = 1000;
+      return { id, time: Math.ceil(time) / msPerSecond };
     } catch (error) {
       if (error instanceof Error && error.message === 'Car has been broken down') {
         this.stopAnimation(id);
       } else {
         console.error(error);
       }
+      throw error;
     }
   }
 
@@ -171,6 +174,7 @@ export class GarageController {
     setTimeout(() => {
       if (this.activeCars.size === 0) {
         gameEmitter.emit('ui:toggle-blocking', false);
+        appEmitter.emit('ui:toggle-blocking', false);
       }
 
       track.setPending(false);
@@ -211,6 +215,33 @@ export class GarageController {
       await this.renderView();
     } catch (error) {
       console.error('Error generating cars:', error);
+    }
+  }
+
+  private async raceAllCarsHandler(): Promise<void> {
+    const tracks = [...this.view.trackList.tracks.entries()];
+
+    const controls = this.view.controls;
+    controls.setPending(true);
+
+    const promises = tracks.map(([id, track]) => {
+      track.setPending(true);
+      return this.raceCarHandler(id, true);
+    });
+
+    try {
+      const winnerData = await Promise.any(promises);
+      const carName = this.view.trackList.tracks.get(winnerData.id)?.getCarName();
+
+      console.log(`🏆 Winner is ${carName} with time ${winnerData.time}s!`);
+    } catch (error) {
+      if (error instanceof AggregateError) {
+        console.log('all cars are broken');
+      } else {
+        console.error(error);
+      }
+    } finally {
+      controls.setPending(false);
     }
   }
 
@@ -323,6 +354,32 @@ export class GarageController {
     if (requestId) {
       cancelAnimationFrame(requestId);
       this.animations.delete(carId);
+    }
+  }
+
+  private setPending(id: number): void {
+    const track = this.view.trackList.tracks.get(id);
+    const controls = this.view.controls;
+
+    if (!track) return;
+
+    track.setPending(true);
+    controls.setPending(true);
+    this.waitingCars.add(id);
+  }
+
+  private resetPending(id: number): void {
+    const track = this.view.trackList.tracks.get(id);
+    const controls = this.view.controls;
+
+    if (!track) return;
+
+    track.setPending(false);
+    track.setRunning(true);
+    this.waitingCars.delete(id);
+
+    if (this.waitingCars.size === 0) {
+      controls.setPending(false);
     }
   }
 }
