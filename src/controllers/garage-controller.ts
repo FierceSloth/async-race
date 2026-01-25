@@ -1,14 +1,20 @@
 import { api } from '@api/api';
-import { gameEmitter } from '@utils/emitter';
+import { appEmitter, gameEmitter } from '@utils/emitter';
 import type { ICar } from '@app-types/types';
 import type { GaragePage } from '@pages/garage-page/garage-page';
 import { getRandomColor, getRandomName } from '@utils/random';
 import { DEFAULT_CARS } from '@constants/cat-car-brands';
-import { CARS_TO_GENERATE, pageLimit, STORAGE_KEY } from '@constants/constants';
+import { CARS_TO_GENERATE, carsLimit, STORAGE_KEY } from '@constants/constants';
+
+const returnAnimationDuration = 1000;
 
 export class GarageController {
   private view: GaragePage;
   private currentPage: number;
+  private animations = new Map<number, number>();
+
+  private activeCars = new Set<number>();
+  private waitingCars = new Set<number>();
 
   constructor(view: GaragePage) {
     this.view = view;
@@ -23,8 +29,9 @@ export class GarageController {
     void this.renderView();
     void this.updateDefaultCars();
   }
-
-  // ? =============== View Methods =======================
+  //? ========================================================================== */
+  //*                               View Methods                                 */
+  //? ========================================================================== */
 
   private async renderView(): Promise<void> {
     sessionStorage.setItem(STORAGE_KEY, this.currentPage.toString());
@@ -32,7 +39,7 @@ export class GarageController {
     try {
       const carsResponse = await api.getCars(this.currentPage);
       const { cars, total } = carsResponse;
-      const maxPage = Math.ceil(total / pageLimit);
+      const maxPage = Math.ceil(total / carsLimit);
 
       if (cars.length <= 0 && this.currentPage > 1) {
         this.currentPage -= 1;
@@ -73,33 +80,40 @@ export class GarageController {
     await this.renderView();
   }
 
-  // ? ============== Listener Methods ====================
+  //? ========================================================================== */
+  //*                          Listeners Initialization                          */
+  //? ========================================================================== */
 
   private addControlsListeners(): void {
     this.view.controls.createCarButton.addListener('click', () => {
-      this.view.modal.open(async (carData) => {
-        await api.createCar(carData);
-        await this.renderView();
-      });
+      void this.createCarHandler();
     });
 
     this.view.controls.generateCarsButton.addListener('click', () => {
       void this.generateCarsHandler();
     });
+
+    this.view.controls.raceButton.addListener('click', () => {
+      void this.raceAllCarsHandler();
+    });
+
+    this.view.controls.resetButton.addListener('click', () => {
+      void this.resetCarsHandler();
+    });
   }
 
   private addTracksListeners(): void {
+    gameEmitter.on<number>('track:race-button-click', (carId) => {
+      void this.raceCarHandler(carId);
+    });
+    gameEmitter.on<number>('track:reset-button-click', (carId) => {
+      void this.resetCarHandler(carId);
+    });
     gameEmitter.on<ICar>('track:remove-button-click', (carData) => {
       void this.removeCarHandler(carData);
     });
     gameEmitter.on<ICar>('track:settings-button-click', (carData) => {
-      this.view.modal.open(async (newCarData) => {
-        await api.updateCar({
-          id: carData.id,
-          ...newCarData,
-        });
-        await this.renderView();
-      }, carData);
+      void this.settingsCarHandler(carData);
     });
   }
 
@@ -112,7 +126,89 @@ export class GarageController {
     });
   }
 
-  // ? ============== Listener Handler ====================
+  //? ========================================================================== */
+  //*                              Listeners Handler                             */
+  //? ========================================================================== */
+
+  //? =========== Track Handlers ===================
+
+  private async raceCarHandler(id: number, blockState = false): Promise<{ id: number; time: number }> {
+    const car = this.view.trackList.tracks.get(id)?.car;
+
+    this.stopAnimation(id);
+    car?.resetBrokenState();
+
+    this.activeCars.add(id);
+
+    gameEmitter.emit('ui:toggle-blocking', true);
+    appEmitter.emit('ui:toggle-blocking', true);
+    if (!blockState) this.setPending(id);
+
+    try {
+      const response = await api.startEngine(id);
+      if (!blockState) this.resetPending(id);
+
+      const { distance, velocity } = response;
+      const time = distance / velocity;
+
+      this.animateCar(id, time);
+      await api.driveEngine(id);
+
+      const msPerSecond = 1000;
+      return { id, time: Math.ceil(time) / msPerSecond };
+    } catch (error) {
+      if (error instanceof Error && error.message === 'Car has been broken down') {
+        car?.setBrokenState();
+        this.stopAnimation(id);
+      } else {
+        console.error(error);
+      }
+      throw error;
+    }
+  }
+
+  private async resetCarHandler(id: number): Promise<void> {
+    const track = this.view.trackList.tracks.get(id);
+    if (!track) return;
+
+    this.stopAnimation(id);
+
+    track.setPending(true);
+
+    await api.stopEngine(id);
+
+    setTimeout(() => {
+      this.activeCars.delete(id);
+
+      if (this.activeCars.size + this.waitingCars.size === 0) {
+        gameEmitter.emit('ui:toggle-blocking', false);
+        appEmitter.emit('ui:toggle-blocking', false);
+      }
+
+      track.setPending(false);
+      track.setRunning(false);
+    }, returnAnimationDuration);
+
+    this.animateReturn(id);
+    track.car.resetBrokenState();
+  }
+
+  private async removeCarHandler(carData: ICar): Promise<void> {
+    await api.deleteCar(carData);
+    await this.renderView();
+  }
+
+  private settingsCarHandler(carData: ICar): void {
+    this.view.carModal.open(async (newCarData) => {
+      await api.updateCar({
+        id: carData.id,
+        ...newCarData,
+      });
+      await this.renderView();
+    }, carData);
+  }
+
+  //? ========== Main Control Handlers =============
 
   private async generateCarsHandler(): Promise<void> {
     const promises = Array.from({ length: CARS_TO_GENERATE }, () => {
@@ -130,10 +226,56 @@ export class GarageController {
     }
   }
 
-  private async removeCarHandler(carData: ICar): Promise<void> {
-    await api.deleteCar(carData);
-    await this.renderView();
+  private async raceAllCarsHandler(): Promise<void> {
+    const tracks = [...this.view.trackList.tracks.entries()];
+
+    if (tracks.length === 0) return;
+
+    const controls = this.view.controls;
+    controls.setPending(true);
+
+    const promises = tracks.map(([id, track]) => {
+      track.setPending(true);
+      return this.raceCarHandler(id, true);
+    });
+
+    try {
+      const winnerData = await Promise.any(promises);
+      const carData = this.view.trackList.tracks.get(winnerData.id)?.getCarData();
+
+      if (carData) {
+        this.view.winnerModal.open(() => {}, { ...carData, time: winnerData.time });
+      }
+    } catch (error) {
+      if (error instanceof AggregateError) {
+        this.view.winnerModal.open(() => {});
+      } else {
+        console.error(error);
+      }
+    } finally {
+      controls.setPending(false);
+    }
   }
+
+  private async resetCarsHandler(): Promise<void> {
+    const controls = this.view.controls;
+    controls.setPending(true);
+
+    const promises = [...this.activeCars].map((carId: number) => {
+      return this.resetCarHandler(carId);
+    });
+
+    await Promise.all(promises);
+  }
+
+  private createCarHandler(): void {
+    this.view.carModal.open(async (carData) => {
+      await api.createCar(carData);
+      await this.renderView();
+    });
+  }
+
+  // ? ========== Pagination Handlers =============
 
   private async paginationPrevHandler(): Promise<void> {
     if (this.currentPage > 1) {
@@ -145,5 +287,111 @@ export class GarageController {
   private async paginationNextHandler(): Promise<void> {
     this.currentPage += 1;
     await this.renderView();
+  }
+
+  //? ========================================================================== */
+  //*                                Utils Methods                               */
+  //? ========================================================================== */
+
+  private animateCar(carId: number, duration: number): void {
+    const carElement = document.querySelector<HTMLElement>(`#car-${carId}`);
+    const trackElement = carElement?.parentElement;
+    if (!carElement || !trackElement) return;
+
+    let start: null | number = null;
+
+    const trackWidth = trackElement.clientWidth || window.innerWidth;
+
+    const carWidth = carElement.clientWidth;
+
+    const distanceToDrive = trackWidth - carWidth;
+
+    const step = (timestamp: number): void => {
+      if (!start) start = timestamp;
+
+      const progressPercent = Math.min((timestamp - start) / duration, 1);
+      const px = progressPercent * distanceToDrive;
+
+      if (carElement) carElement.style.transform = `translateX(${px}px)`;
+
+      if (progressPercent < 1) {
+        const requestId = requestAnimationFrame(step);
+        this.animations.set(carId, requestId);
+      } else {
+        this.animations.delete(carId);
+      }
+    };
+
+    const requestId = requestAnimationFrame(step);
+    this.animations.set(carId, requestId);
+  }
+
+  private animateReturn(carId: number): void {
+    const carElement = document.querySelector<HTMLElement>(`#car-${carId}`);
+    if (!carElement) return;
+
+    this.stopAnimation(carId);
+
+    const currentStyle = getComputedStyle(carElement);
+    const matrix = new DOMMatrix(currentStyle.transform);
+    const currentTranslateX = matrix.m41;
+
+    if (currentTranslateX <= 0) return;
+
+    let start: number | null = null;
+
+    const step = (timestamp: number): void => {
+      if (!start) start = timestamp;
+      const progressPercent = (timestamp - start) / returnAnimationDuration;
+
+      const newTranslateX = currentTranslateX * (1 - progressPercent);
+
+      if (progressPercent < 1) {
+        carElement.style.transform = `translateX(${newTranslateX}px)`;
+
+        const requestId = requestAnimationFrame(step);
+        this.animations.set(carId, requestId);
+      } else {
+        carElement.style.transform = 'translateX(0px)';
+        this.animations.delete(carId);
+      }
+    };
+
+    const requestId = requestAnimationFrame(step);
+    this.animations.set(carId, requestId);
+  }
+
+  private stopAnimation(carId: number): void {
+    const requestId = this.animations.get(carId);
+    if (requestId) {
+      cancelAnimationFrame(requestId);
+      this.animations.delete(carId);
+    }
+  }
+
+  private setPending(id: number): void {
+    const track = this.view.trackList.tracks.get(id);
+    const controls = this.view.controls;
+
+    if (!track) return;
+
+    track.setPending(true);
+    controls.setPending(true);
+    this.waitingCars.add(id);
+  }
+
+  private resetPending(id: number): void {
+    const track = this.view.trackList.tracks.get(id);
+    const controls = this.view.controls;
+
+    if (!track) return;
+
+    track.setPending(false);
+    track.setRunning(true);
+    this.waitingCars.delete(id);
+
+    if (this.waitingCars.size === 0) {
+      controls.setPending(false);
+    }
   }
 }

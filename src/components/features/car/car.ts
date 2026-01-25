@@ -2,10 +2,11 @@ import { Component } from '@/common/component';
 import type { ICar, IComponentChild } from '@/common/types/types';
 
 import carSvg from '@/assets/svg/car.svg?raw';
+import brokenIcon from '@/assets/svg/broken-tools.svg';
 import styles from './car.module.scss';
 
 interface IProps extends IComponentChild {
-  carAttrs: Omit<ICar, 'id'>;
+  carAttrs: ICar;
 }
 
 /**
@@ -15,12 +16,14 @@ interface IProps extends IComponentChild {
  */
 export class Car extends Component {
   private textEl: Element | null = null;
+  private brokenIcon: Component | null = null;
 
   constructor({ className = [], carAttrs }: IProps) {
     super({ className: [styles.car, ...className] });
 
-    const { color, name } = carAttrs;
+    const { color, name, id } = carAttrs;
 
+    this.node.id = `car-${id}`;
     this.node.innerHTML = carSvg;
     this.textEl = this.node.querySelector('.car-name');
 
@@ -41,5 +44,21 @@ export class Car extends Component {
   public updateCar(color: string, name: string): void {
     this.updateName(name);
     this.updateColor(color);
+  }
+
+  public setBrokenState(): void {
+    this.brokenIcon = new Component({
+      tag: 'img',
+      className: styles.brokenIcon,
+      attrs: { src: brokenIcon, alt: 'broken' },
+    });
+    this.append(this.brokenIcon);
+  }
+
+  public resetBrokenState(): void {
+    if (this.brokenIcon) {
+      this.brokenIcon.destroy();
+      this.brokenIcon = null;
+    }
   }
 }

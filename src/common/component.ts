@@ -112,6 +112,14 @@ export class Component<T extends HTMLElement = HTMLElement> {
     return this;
   }
 
+  public setDisabled(isDisabled: boolean): void {
+    if (isDisabled) {
+      this.node.setAttribute('disabled', 'true');
+    } else {
+      this.node.removeAttribute('disabled');
+    }
+  }
+
   public destroy(): void {
     this.node.remove();
   }

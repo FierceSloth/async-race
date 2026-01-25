@@ -2,6 +2,7 @@ import { Component } from '@/common/component';
 import type { IComponentChild } from '@/common/types/types';
 
 import styles from './pagination.module.scss';
+import { gameEmitter } from '@/common/utils/emitter';
 
 interface IProps extends IComponentChild {}
 
@@ -18,6 +19,10 @@ export class Pagination extends Component {
     this.nextArrow = new Component({ tag: 'button', className: styles.arrow, text: '>' });
 
     this.appendChildren([this.prevArrow, this.pageCounter, this.nextArrow]);
+
+    gameEmitter.on<boolean>('ui:toggle-blocking', (isDisabled) => {
+      this.toggleControlButtons(isDisabled);
+    });
   }
 
   public updatePageCounter(page: number, totalPage: number): void {
@@ -26,19 +31,12 @@ export class Pagination extends Component {
     const isPreviousDisabled = page <= 1;
     const isNextDisabled = page >= totalPage;
 
-    this.prevArrow.toggleClass(styles.disabled, isPreviousDisabled);
-    this.nextArrow.toggleClass(styles.disabled, isNextDisabled);
+    this.prevArrow.setDisabled(isPreviousDisabled);
+    this.nextArrow.setDisabled(isNextDisabled);
+  }
 
-    if (isPreviousDisabled) {
-      this.prevArrow.setAttribute('disabled', 'true');
-    } else {
-      this.prevArrow.removeAttribute('disabled');
-    }
-
-    if (isNextDisabled) {
-      this.nextArrow.setAttribute('disabled', 'true');
-    } else {
-      this.nextArrow.removeAttribute('disabled');
-    }
+  private toggleControlButtons(isDisabled: boolean): void {
+    this.prevArrow.setDisabled(isDisabled);
+    this.nextArrow.setDisabled(isDisabled);
   }
 }

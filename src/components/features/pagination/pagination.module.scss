@@ -22,12 +22,12 @@
   color: var(--white);
   transition: all 0.3s;
 
-  &:hover:not(.disabled) {
+  &:hover:not([disabled]) {
     background-color: var(--blue-deep);
     color: var(--blue-light);
   }
 
-  &.disabled {
+  &[disabled] {
     opacity: 0.3;
     cursor: not-allowed;
   }

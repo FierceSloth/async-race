@@ -15,15 +15,11 @@
   justify-content: center;
   align-items: center;
 
-  &:hover:not(.disabled) {
+  &:hover:not([disabled]) {
     background-color: var(--blue-light);
-
-    // .image {
-    //   filter: brightness(0) saturate(100%) invert(94%) sepia(11%) saturate(211%) hue-rotate(68deg) brightness(106%) contrast(91%);
-    // }
   }
 
-  &:active {
+  &:active:not([disabled]) {
     transform: scale(0.95);
   }
 
@@ -31,8 +27,9 @@
     user-select: none;
   }
 
-  .disabled {
-    opacity: 0.3;
+  &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 

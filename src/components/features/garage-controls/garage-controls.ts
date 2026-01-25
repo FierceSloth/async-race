@@ -33,10 +33,12 @@ export class GarageControls extends Component {
   public readonly raceButton: IconButton;
   public readonly resetButton: IconButton;
 
+  public isPending = false;
+
   constructor({ className = [] }: IProps) {
     super({ className: [styles.controls, ...className] });
 
-    // ? ================ Buttons ================
+    //? ================ Buttons ================
 
     this.totalCarsCounter = new Component({
       className: styles.counter,
@@ -51,13 +53,18 @@ export class GarageControls extends Component {
     this.raceButton.addClass(styles.raceButton);
     this.resetButton.addClass(styles.resetButton);
 
-    // ? ============ Emitter =============
+    //? ============ Emitter =============
 
     gameEmitter.on<number>('cars:total-cars-update', (total) => {
       this.updateCarCounter(total);
     });
+    gameEmitter.on<boolean>('ui:toggle-blocking', (isDisabled) => {
+      this.toggleControlButtons(isDisabled);
+    });
 
-    // ? ============ Initialization =============
+    //? ============ Initialization =============
+
+    this.resetButton.setDisabled(true);
 
     this.appendChildren([
       this.totalCarsCounter,
@@ -72,10 +79,22 @@ export class GarageControls extends Component {
     this.totalCarsCounter.setText(count.toString());
   }
 
+  public setPending(isPending: boolean): void {
+    this.isPending = isPending;
+    this.toggleControlButtons(true);
+    this.resetButton.setDisabled(isPending);
+  }
+
   private createButton(attributes: IImageAttributes): IconButton {
     return new IconButton({
       className: [styles.iconButton],
       attrs: attributes,
     });
+  }
+
+  private toggleControlButtons(isDisabled: boolean): void {
+    this.raceButton.setDisabled(isDisabled);
+    this.generateCarsButton.setDisabled(isDisabled);
+    this.createCarButton.setDisabled(isDisabled);
   }
 }

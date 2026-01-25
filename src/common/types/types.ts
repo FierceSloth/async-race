@@ -8,14 +8,15 @@ type AppEvents =
 // prettier-ignore
 type GameEvents =
   | 'cars:total-cars-update'
+  | 'ui:toggle-blocking'
   | 'track-list:render'
 
 // prettier-ignore
 type TrackHandlerEvent =
- | 'track:race-button-click'
- | 'track:reset-button-click'
- | 'track:settings-button-click'
- | 'track:remove-button-click'
+  | 'track:race-button-click'
+  | 'track:reset-button-click'
+  | 'track:settings-button-click'
+  | 'track:remove-button-click'
 
 export type EmitterEvents = AppEvents | GameEvents | TrackHandlerEvent;
 
@@ -45,6 +46,8 @@ export interface IImageAttributes {
 
 // ============ Api =============
 
+export type EngineStatus = 'started' | 'stopped';
+
 export interface ICar {
   name: string;
   color: string;
@@ -54,4 +57,13 @@ export interface ICar {
 export interface IGetCarsResponse {
   cars: ICar[];
   total: number;
+}
+
+export interface IEngineResponse {
+  velocity: number;
+  distance: number;
+}
+
+export interface IEngineStatus {
+  success: EngineStatus;
 }
