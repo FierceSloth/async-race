@@ -133,7 +133,11 @@ export class GarageController {
   //? =========== Track Handlers ===================
 
   private async raceCarHandler(id: number, blockState = false): Promise<{ id: number; time: number }> {
+    const car = this.view.trackList.tracks.get(id)?.car;
+
     this.stopAnimation(id);
+    car?.resetBrokenState();
+
     this.activeCars.add(id);
 
     gameEmitter.emit('ui:toggle-blocking', true);
@@ -154,6 +158,7 @@ export class GarageController {
       return { id, time: Math.ceil(time) / msPerSecond };
     } catch (error) {
       if (error instanceof Error && error.message === 'Car has been broken down') {
+        car?.setBrokenState();
         this.stopAnimation(id);
       } else {
         console.error(error);
@@ -166,13 +171,15 @@ export class GarageController {
     const track = this.view.trackList.tracks.get(id);
     if (!track) return;
 
-    this.stopAnimation(id);
     this.activeCars.delete(id);
+    this.stopAnimation(id);
 
     track.setPending(true);
 
+    await api.stopEngine(id);
+
     setTimeout(() => {
-      if (this.activeCars.size === 0) {
+      if (this.activeCars.size + this.waitingCars.size === 0) {
         gameEmitter.emit('ui:toggle-blocking', false);
         appEmitter.emit('ui:toggle-blocking', false);
       }
@@ -182,7 +189,7 @@ export class GarageController {
     }, returnAnimationDuration);
 
     this.animateReturn(id);
-    await api.stopEngine(id);
+    track.car.resetBrokenState();
   }
 
   private async removeCarHandler(carData: ICar): Promise<void> {

@@ -31,7 +31,7 @@ const buttonAttributes = {
 } as const;
 
 export class CarTrack extends Component {
-  private car: Component;
+  public car: Car;
   private finishFlag: Component;
 
   private raceButton: IconButton;
