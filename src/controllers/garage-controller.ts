@@ -90,6 +90,10 @@ export class GarageController {
     this.view.controls.generateCarsButton.addListener('click', () => {
       void this.generateCarsHandler();
     });
+
+    this.view.controls.resetButton.addListener('click', () => {
+      void this.resetCarsHandler();
+    });
   }
 
   private addTracksListeners(): void {
@@ -97,7 +101,7 @@ export class GarageController {
       void this.raceCarHandler(carId);
     });
     gameEmitter.on<number>('track:reset-button-click', (carId) => {
-      void this.stopCarHandler(carId);
+      void this.resetCarHandler(carId);
     });
     gameEmitter.on<ICar>('track:remove-button-click', (carData) => {
       void this.removeCarHandler(carData);
@@ -124,6 +128,7 @@ export class GarageController {
 
   private async raceCarHandler(id: number): Promise<void> {
     const track = this.view.trackList.tracks.get(id);
+    const controls = this.view.controls;
     if (!track) return;
 
     this.stopAnimation(id);
@@ -131,11 +136,14 @@ export class GarageController {
 
     gameEmitter.emit('ui:toggle-blocking', true);
     track.setPending(true);
+    controls.setPending(true);
 
     try {
       const response = await api.startEngine(id);
       track.setPending(false);
       track.setRunning(true);
+
+      controls.setPending(false);
 
       const { distance, velocity } = response;
       const time = distance / velocity;
@@ -151,7 +159,7 @@ export class GarageController {
     }
   }
 
-  private async stopCarHandler(id: number): Promise<void> {
+  private async resetCarHandler(id: number): Promise<void> {
     const track = this.view.trackList.tracks.get(id);
     if (!track) return;
 
@@ -204,6 +212,17 @@ export class GarageController {
     } catch (error) {
       console.error('Error generating cars:', error);
     }
+  }
+
+  private async resetCarsHandler(): Promise<void> {
+    const controls = this.view.controls;
+    controls.setPending(true);
+
+    const promises = [...this.activeCars].map((carId: number) => {
+      return this.resetCarHandler(carId);
+    });
+
+    await Promise.all(promises);
   }
 
   private createCarHandler(): void {

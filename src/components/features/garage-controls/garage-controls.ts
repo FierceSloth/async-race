@@ -62,6 +62,8 @@ export class GarageControls extends Component {
 
     //? ============ Initialization =============
 
+    this.resetButton.setDisabled(true);
+
     this.appendChildren([
       this.totalCarsCounter,
       this.createCarButton,
@@ -73,6 +75,11 @@ export class GarageControls extends Component {
 
   public updateCarCounter(count: string | number): void {
     this.totalCarsCounter.setText(count.toString());
+  }
+
+  public setPending(isPending: boolean): void {
+    this.toggleControlButtons(true);
+    this.resetButton.setDisabled(isPending);
   }
 
   private createButton(attributes: IImageAttributes): IconButton {
