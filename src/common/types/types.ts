@@ -67,3 +67,18 @@ export interface IEngineResponse {
 export interface IEngineStatus {
   success: EngineStatus;
 }
+
+export interface IWinner {
+  id: number;
+  wins: number;
+  time: number;
+}
+
+export interface IWinnerFull extends IWinner {
+  car: ICar;
+}
+
+export interface IWinnersResponse {
+  winners: IWinner[];
+  total: number;
+}

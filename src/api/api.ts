@@ -1,4 +1,12 @@
-import type { ICar, IEngineResponse, IEngineStatus, IGetCarsResponse } from '@app-types/types';
+import { SortField, SortOrder } from '@/common/enums/enums';
+import type {
+  ICar,
+  IEngineResponse,
+  IEngineStatus,
+  IGetCarsResponse,
+  IWinner,
+  IWinnersResponse,
+} from '@app-types/types';
 import { ERROR_STATUS_404, ERROR_STATUS_500, JSON_HEADERS, carsLimit } from '@constants/constants';
 
 class Api {
@@ -146,6 +154,90 @@ class Api {
       throw new Error(`Drive mode failed for car ${id}`);
     }
     return response.json();
+  }
+
+  public async getWinners(
+    page: number,
+    sort: SortField = SortField.ID,
+    order: SortOrder = SortOrder.ASC
+  ): Promise<IWinnersResponse> {
+    try {
+      const response = await fetch(
+        `${this.winnersUrl}?_page=${page}&_limit=${this.carsLimit}&_sort=${sort}&_order=${order}`
+      );
+
+      const winners = await response.json();
+      const total = Number(response.headers.get('X-Total-Count'));
+
+      return { winners, total };
+    } catch (error) {
+      console.error(`Error fetching winners:`, error);
+
+      return {
+        winners: [],
+        total: 0,
+      };
+    }
+  }
+
+  public async getWinner(id: number): Promise<IWinner | null> {
+    try {
+      const response = await fetch(`${this.winnersUrl}/${id}`);
+
+      if (response.status === ERROR_STATUS_404) {
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Failed to get winner ${id}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching winner ${id}:`, error);
+      return null;
+    }
+  }
+
+  public async createWinner(data: IWinner): Promise<void> {
+    try {
+      const response = await fetch(`${this.winnersUrl}`, {
+        method: 'POST',
+        headers: JSON_HEADERS,
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create winner`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching winner:`, error);
+      return;
+    }
+  }
+
+  public async updateWinner(id: number, body: { wins: number; time: number }): Promise<void> {
+    try {
+      await fetch(`${this.baseUrl}/winners/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    } catch (error) {
+      console.error(`Error fetching winner:`, error);
+      return;
+    }
+  }
+
+  public async deleteWinner(id: number): Promise<void> {
+    try {
+      await fetch(`${this.baseUrl}/winners/${id}`, { method: 'DELETE' });
+    } catch (error) {
+      console.error(`Error fetching winner:`, error);
+      return;
+    }
   }
 }
 
