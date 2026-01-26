@@ -37,7 +37,7 @@ export class WinnerModal extends Component {
     this.append(modal);
   }
 
-  public open(callback?: ModalCallback, winnerData?: WinnerData): void {
+  public open(callback?: ModalCallback, winnerData?: WinnerData, text?: string): void {
     if (callback) this.onClose = callback;
 
     if (winnerData) {
@@ -47,7 +47,7 @@ export class WinnerModal extends Component {
       this.textEl.setText(`🏆 Winner: ${winnerData.name} has been driven in ${winnerData.time}s!`);
     } else {
       this.previewCar.setBrokenState();
-      this.textEl.setText(winnerModalMessages.noWinner);
+      this.textEl.setText(text || winnerModalMessages.noWinner);
     }
 
     const timeMs = 10;

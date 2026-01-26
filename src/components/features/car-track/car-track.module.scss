@@ -3,6 +3,12 @@
   flex-direction: column;
   width: 100%;
   gap: 5px;
+
+  @media (max-width: 768px) {
+    padding-top: 20px;
+    flex-direction: column-reverse;
+    align-items: end;
+  }
 }
 
 .carName {
@@ -31,6 +37,10 @@
   justify-content: end;
   padding: 0 30px;
   width: 100%;
+
+  @media (max-width: 768px) {
+    padding: 0 10px;
+  }
 }
 
 .car {
@@ -39,11 +49,20 @@
   top: -50px;
   width: 110px;
   aspect-ratio: 1 / 1;
+
+  @media (max-width: 768px) {
+    top: -30px;
+    width: 90px;
+  }
 }
 
 .finishImg {
   position: relative;
   width: 50px;
+
+  @media (max-width: 768px) {
+    width: 40px;
+  }
 }
 
 .button {

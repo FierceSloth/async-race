@@ -1,16 +1,28 @@
-import type { Component } from '@common/component';
+import { pageMessages, placeholderModalMessages } from '@/common/constants/messages';
+import { Component } from '@common/component';
 
-// import styles from './winners-page.module.scss';
+import styles from './winners-page.module.scss';
+import { Pagination } from '@/components/features/pagination/pagination';
+import { WinnerModal } from '@/components/features/winner-modal/winner-modal';
 
 export class WinnersPage {
   private container: Component;
+  private pagination!: Pagination;
 
   constructor(container: Component) {
     this.container = container;
   }
 
   public render(): void {
-    this.container.node.innerHTML = '<h1> Winner Page </h1>';
+    const mainTitle = new Component({ tag: 'h1', className: styles.mainTitle, text: pageMessages.winner });
+
+    this.pagination = new Pagination({ className: [styles.pagination] });
+    this.pagination.updatePageCounter(1, 1); // ? stub implementation
+
+    const modal = new WinnerModal({ className: [styles.modal] });
+    modal.open(() => {}, undefined, placeholderModalMessages.winners); /// ? stub implementation
+
+    this.container.appendChildren([mainTitle, this.pagination]);
   }
 
   public destroy(): void {}
