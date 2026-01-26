@@ -38,6 +38,10 @@
 
   padding: 30px;
   border-radius: 20px;
+
+  @media (max-width: 768px) {
+    margin: 20px;
+  }
 }
 
 .previewCar {
@@ -63,6 +67,10 @@
     width: 220px;
     height: 220px;
     border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    width: 70%;
   }
 }
 

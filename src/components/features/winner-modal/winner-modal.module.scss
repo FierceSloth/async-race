@@ -37,6 +37,10 @@
 
   padding: 30px;
   border-radius: 20px;
+
+  @media (max-width: 768px) {
+    margin: 20px;
+  }
 }
 
 .previewCar {
@@ -56,8 +60,16 @@
   img {
     width: 70px;
   }
+
+  @media (max-width: 768px) {
+    width: 70%;
+  }
 }
 
 .text {
   text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
 }

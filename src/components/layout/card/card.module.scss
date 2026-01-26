@@ -44,6 +44,10 @@
   &[disabled] {
     cursor: not-allowed;
   }
+
+  @media (max-width: 768px) {
+    width: 150px;
+  }
 }
 
 .card {
@@ -57,4 +61,8 @@
   border-top-left-radius: 0;
 
   flex-grow: 1;
+
+  @media (max-width: 768px) {
+    padding: 30px 15px;
+  }
 }
