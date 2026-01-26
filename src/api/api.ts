@@ -35,11 +35,7 @@ class Api {
       };
     } catch (error) {
       console.error(`Error fetching cars:`, error);
-
-      return {
-        cars: [],
-        total: 0,
-      };
+      throw error;
     }
   }
 

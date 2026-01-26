@@ -1,4 +1,4 @@
-import { pageMessages } from '@/common/constants/messages';
+import { pageMessages, placeholderModalMessages } from '@/common/constants/messages';
 import { Component } from '@common/component';
 
 import styles from './winners-page.module.scss';
@@ -20,11 +20,7 @@ export class WinnersPage {
     this.pagination.updatePageCounter(1, 1); // ? stub implementation
 
     const modal = new WinnerModal({ className: [styles.modal] });
-    modal.open(
-      () => {},
-      undefined,
-      'Winner page is not implemented and most likely won’t be added due to tight deadlines 🏗️🚧⏳'
-    ); /// ? stub implementation
+    modal.open(() => {}, undefined, placeholderModalMessages.winners); /// ? stub implementation
 
     this.container.appendChildren([mainTitle, this.pagination]);
   }

@@ -5,6 +5,7 @@ import type { GaragePage } from '@pages/garage-page/garage-page';
 import { getRandomColor, getRandomName } from '@utils/random';
 import { DEFAULT_CARS } from '@constants/cat-car-brands';
 import { CARS_TO_GENERATE, carsLimit, STORAGE_KEY } from '@constants/constants';
+import { placeholderModalMessages } from '@/common/constants/messages';
 
 const returnAnimationDuration = 1000;
 
@@ -51,6 +52,7 @@ export class GarageController {
       this.view.controls.updateCarCounter(total);
       this.view.pagination.updatePageCounter(this.currentPage, maxPage || 1);
     } catch (error) {
+      this.view.winnerModal.open(() => {}, undefined, placeholderModalMessages.garage);
       console.error('Error fetching cars:', error);
     }
   }
