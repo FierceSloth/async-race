@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 const PORT = 7777;
 
 export default defineConfig({
-  base: '/fiercesloth-JSFE2025Q3/async-race/',
+  base: '/async-race/',
   build: {
     outDir: 'dist',
   },
